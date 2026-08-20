@@ -4,6 +4,62 @@ public class Marcus {
     private static final String DIVIDER = "____________________________________________________________";
     private static final String INDENT = "     ";
 
+    /** Identifies the commands understood by Marcus. */
+    private enum CommandType {
+        BYE("bye"), LIST("list"), MARK("mark"), UNMARK("unmark"), DELETE("delete"),
+        TODO("todo"), DEADLINE("deadline"), EVENT("event"), UNKNOWN("");
+
+        private final String keyword;
+
+        CommandType(String keyword) {
+            this.keyword = keyword;
+        }
+
+        /**
+         * Classifies a user command while preserving commands without required arguments as invalid.
+         *
+         * @param command user input
+         * @return the corresponding command type, or {@code UNKNOWN}
+         */
+        private static CommandType from(String command) {
+            if (command.equals(BYE.keyword)) {
+                return BYE;
+            }
+            if (command.equals(LIST.keyword)) {
+                return LIST;
+            }
+            if (command.startsWith(MARK.keyword + " ")) {
+                return MARK;
+            }
+            if (command.startsWith(UNMARK.keyword + " ")) {
+                return UNMARK;
+            }
+            if (command.startsWith(DELETE.keyword + " ")) {
+                return DELETE;
+            }
+            if (command.equals(TODO.keyword) || command.startsWith(TODO.keyword + " ")) {
+                return TODO;
+            }
+            if (command.equals(DEADLINE.keyword) || command.startsWith(DEADLINE.keyword + " ")) {
+                return DEADLINE;
+            }
+            if (command.equals(EVENT.keyword) || command.startsWith(EVENT.keyword + " ")) {
+                return EVENT;
+            }
+            return UNKNOWN;
+        }
+
+        /**
+         * Extracts the text after this command's keyword.
+         *
+         * @param command user input beginning with this command keyword
+         * @return command arguments, or an empty string when none are present
+         */
+        private String getArguments(String command) {
+            return command.length() == keyword.length() ? "" : command.substring(keyword.length() + 1);
+        }
+    }
+
     public static void main(String[] args) {
         // Banner
         String banner = " __  __    _    ____   ____ _   _ ____ \n"
@@ -25,19 +81,20 @@ public class Marcus {
         Scanner scanner = new Scanner(System.in);
         while (scanner.hasNextLine()) {
             String command = scanner.nextLine();
-            if (command.equals("bye")) {
+            CommandType commandType = CommandType.from(command);
+            if (commandType == CommandType.BYE) {
                 System.out.println(DIVIDER);
                 System.out.println(INDENT + "Bye. Hope to see you again soon!");
                 System.out.println(DIVIDER);
                 break;
-            } else if (command.equals("list")) {
+            } else if (commandType == CommandType.LIST) {
                 System.out.println(DIVIDER);
                 System.out.print(arrayToString(tasks));
                 System.out.println(DIVIDER);
-            } else if (command.startsWith("mark ")) {
+            } else if (commandType == CommandType.MARK) {
                 System.out.println(DIVIDER);
                 try {
-                    int taskNumber = Integer.parseInt(command.substring(5));
+                    int taskNumber = Integer.parseInt(commandType.getArguments(command));
                     if (taskNumber < 1 || taskNumber > currIndex) {
                         System.out.println(INDENT + "That task number does not exist.");
                     } else {
@@ -49,10 +106,10 @@ public class Marcus {
                     System.out.println(INDENT + "Please provide a task number to mark.");
                 }
                 System.out.println(DIVIDER);
-            } else if (command.startsWith("unmark ")) {
+            } else if (commandType == CommandType.UNMARK) {
                 System.out.println(DIVIDER);
                 try {
-                    int taskNumber = Integer.parseInt(command.substring(7));
+                    int taskNumber = Integer.parseInt(commandType.getArguments(command));
                     if (taskNumber < 1 || taskNumber > currIndex) {
                         System.out.println(INDENT + "That task number does not exist.");
                     } else {
@@ -64,10 +121,10 @@ public class Marcus {
                     System.out.println(INDENT + "Please provide a task number to unmark.");
                 }
                 System.out.println(DIVIDER);
-            } else if (command.startsWith("delete ")) {
+            } else if (commandType == CommandType.DELETE) {
                 System.out.println(DIVIDER);
                 try {
-                    int taskNumber = Integer.parseInt(command.substring(7));
+                    int taskNumber = Integer.parseInt(commandType.getArguments(command));
                     if (taskNumber < 1 || taskNumber > currIndex) {
                         System.out.println(INDENT + "That task number does not exist.");
                     } else {
@@ -86,10 +143,10 @@ public class Marcus {
                 }
                 System.out.println(DIVIDER);
             } else {
-                Task newTask = createTask(command);
+                Task newTask = createTask(command, commandType);
                 System.out.println(DIVIDER);
                 if (newTask == null) {
-                    System.out.println(INDENT + getErrorMessage(command));
+                    System.out.println(INDENT + getErrorMessage(command, commandType));
                 } else {
                     tasks[currIndex] = newTask;
                     currIndex++;
@@ -106,25 +163,26 @@ public class Marcus {
      * Creates a task from a supported task-creation command.
      *
      * @param command user command to interpret
+     * @param commandType parsed type of the command
      * @return the new task, or {@code null} when the command is invalid
      */
-    private static Task createTask(String command) {
-        if (command.startsWith("todo ")) {
-            String description = command.substring(5);
+    private static Task createTask(String command, CommandType commandType) {
+        if (commandType == CommandType.TODO) {
+            String description = commandType.getArguments(command);
             if (!description.isBlank()) {
                 return new Todo(description);
             }
         }
 
-        if (command.startsWith("deadline ")) {
-            String[] parts = command.substring(9).split(" /by ", 2);
+        if (commandType == CommandType.DEADLINE) {
+            String[] parts = commandType.getArguments(command).split(" /by ", 2);
             if (parts.length == 2 && !parts[0].isBlank() && !parts[1].isBlank()) {
                 return new Deadline(parts[0], parts[1]);
             }
         }
 
-        if (command.startsWith("event ")) {
-            String[] descriptionAndFrom = command.substring(6).split(" /from ", 2);
+        if (commandType == CommandType.EVENT) {
+            String[] descriptionAndFrom = commandType.getArguments(command).split(" /from ", 2);
             if (descriptionAndFrom.length == 2) {
                 String[] fromAndTo = descriptionAndFrom[1].split(" /to ", 2);
                 if (fromAndTo.length == 2 && !descriptionAndFrom[0].isBlank()
@@ -141,16 +199,17 @@ public class Marcus {
      * Returns a helpful message for an invalid task-creation command.
      *
      * @param command invalid user command
+     * @param commandType parsed type of the command
      * @return a command-specific error message
      */
-    private static String getErrorMessage(String command) {
-        if (command.equals("todo") || command.startsWith("todo ")) {
+    private static String getErrorMessage(String command, CommandType commandType) {
+        if (commandType == CommandType.TODO) {
             return "Please enter task with todo, eg. todo go for a run";
         }
-        if (command.equals("deadline") || command.startsWith("deadline ")) {
+        if (commandType == CommandType.DEADLINE) {
             return "Please enter task with deadline, eg. deadline return book /by Sunday";
         }
-        if (command.equals("event") || command.startsWith("event ")) {
+        if (commandType == CommandType.EVENT) {
             return "Please enter task with event, eg. event project meeting /from Mon 2pm /to 4pm";
         }
         return "What do you mean by \"" + command + "\", please enter a valid command";

@@ -27,7 +27,7 @@ ____________________________________________________________
 
 ## Test Case: Add, mark, unmark, and list typed tasks
 
-**Aim:** Verify that to-dos, deadlines, and events are added with the correct display format, and that their completion status can be changed.
+**Aim:** Verify that each complete command is recognised by its command type, its remaining text is parsed as task details, and the resulting typed tasks can be marked, unmarked, and listed.
 
 ### Input
 ```text
