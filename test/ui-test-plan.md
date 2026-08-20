@@ -228,3 +228,121 @@ ____________________________________________________________
      Bye. Hope to see you again soon!
 ____________________________________________________________
 ```
+
+## Test Case: Delete from the middle, first, and final positions
+
+**Aim:** Verify that deletion shifts later tasks into the correct position, retains their status, and supports deleting until the list is empty.
+
+### Input
+```text
+todo first
+deadline second /by Friday
+event third /from 2pm /to 3pm
+delete 2
+list
+mark 2
+delete 1
+list
+delete 1
+list
+bye
+```
+
+### Expected Output
+```text
+ __  __    _    ____   ____ _   _ ____ 
+|  \/  |  / \  |  _ \ / ___| | | / ___|
+| |\/| | / _ \ | |_) | |   | | | \___ \
+| |  | |/ ___ \|  _ <| |___| |_| |___) |
+|_|  |_/_/   \_\_| \_\\____|\___/|____/
+
+Hello, I am Marcus the Chatbot!
+What can I do for you?
+____________________________________________________________
+____________________________________________________________
+     Got it. I've added this task:
+       [T][ ] first
+     Now you have 1 tasks in the list.
+____________________________________________________________
+____________________________________________________________
+     Got it. I've added this task:
+       [D][ ] second (by: Friday)
+     Now you have 2 tasks in the list.
+____________________________________________________________
+____________________________________________________________
+     Got it. I've added this task:
+       [E][ ] third (from: 2pm to: 3pm)
+     Now you have 3 tasks in the list.
+____________________________________________________________
+____________________________________________________________
+     Noted. I've removed this task:
+       [D][ ] second (by: Friday)
+     Now you have 2 tasks in the list.
+____________________________________________________________
+____________________________________________________________
+     Here are the tasks in your list:
+     1.[T][ ] first
+     2.[E][ ] third (from: 2pm to: 3pm)
+____________________________________________________________
+____________________________________________________________
+     Nice! I've marked this task as done:
+       [E][X] third (from: 2pm to: 3pm)
+____________________________________________________________
+____________________________________________________________
+     Noted. I've removed this task:
+       [T][ ] first
+     Now you have 1 tasks in the list.
+____________________________________________________________
+____________________________________________________________
+     Here are the tasks in your list:
+     1.[E][X] third (from: 2pm to: 3pm)
+____________________________________________________________
+____________________________________________________________
+     Noted. I've removed this task:
+       [E][X] third (from: 2pm to: 3pm)
+     Now you have 0 tasks in the list.
+____________________________________________________________
+____________________________________________________________
+     Here are the tasks in your list:
+____________________________________________________________
+____________________________________________________________
+     Bye. Hope to see you again soon!
+____________________________________________________________
+```
+
+## Test Case: Reject invalid delete commands
+
+**Aim:** Verify that delete commands with a missing, non-numeric, or out-of-range task number are rejected without changing the task list.
+
+### Input
+```text
+delete
+delete two
+delete 1
+bye
+```
+
+### Expected Output
+```text
+ __  __    _    ____   ____ _   _ ____ 
+|  \/  |  / \  |  _ \ / ___| | | / ___|
+| |\/| | / _ \ | |_) | |   | | | \___ \
+| |  | |/ ___ \|  _ <| |___| |_| |___) |
+|_|  |_/_/   \_\_| \_\\____|\___/|____/
+
+Hello, I am Marcus the Chatbot!
+What can I do for you?
+____________________________________________________________
+____________________________________________________________
+     What do you mean by "delete", please enter a valid command
+____________________________________________________________
+____________________________________________________________
+     Please provide a task number to delete.
+____________________________________________________________
+____________________________________________________________
+     That task number does not exist.
+____________________________________________________________
+____________________________________________________________
+     Bye. Hope to see you again soon!
+____________________________________________________________
+```
