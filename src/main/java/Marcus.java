@@ -68,7 +68,7 @@ public class Marcus {
                 Task newTask = createTask(command);
                 System.out.println(DIVIDER);
                 if (newTask == null) {
-                    System.out.println(INDENT + "Please use todo, deadline, or event to add a task.");
+                    System.out.println(INDENT + getErrorMessage(command));
                 } else {
                     tasks[currIndex] = newTask;
                     currIndex++;
@@ -89,7 +89,10 @@ public class Marcus {
      */
     private static Task createTask(String command) {
         if (command.startsWith("todo ")) {
-            return new Todo(command.substring(5));
+            String description = command.substring(5);
+            if (!description.isBlank()) {
+                return new Todo(description);
+            }
         }
 
         if (command.startsWith("deadline ")) {
@@ -111,6 +114,25 @@ public class Marcus {
         }
 
         return null;
+    }
+
+    /**
+     * Returns a helpful message for an invalid task-creation command.
+     *
+     * @param command invalid user command
+     * @return a command-specific error message
+     */
+    private static String getErrorMessage(String command) {
+        if (command.equals("todo") || command.startsWith("todo ")) {
+            return "Please enter task with todo, eg. todo go for a run";
+        }
+        if (command.equals("deadline") || command.startsWith("deadline ")) {
+            return "Please enter task with deadline, eg. deadline return book /by Sunday";
+        }
+        if (command.equals("event") || command.startsWith("event ")) {
+            return "Please enter task with event, eg. event project meeting /from Mon 2pm /to 4pm";
+        }
+        return "What do you mean by \"" + command + "\", please enter a valid command";
     }
 
     /**

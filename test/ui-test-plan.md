@@ -91,3 +91,68 @@ ____________________________________________________________
      Bye. Hope to see you again soon!
 ____________________________________________________________
 ```
+
+## Test Case: Reject every invalid command form
+
+**Aim:** Verify every current error-response path: incomplete task commands, unknown commands, missing status-command arguments, non-numeric task numbers, and task numbers outside the list.
+
+### Input
+```text
+todo
+deadline whats up
+event run
+banana
+mark
+mark two
+mark 1
+unmark
+unmark two
+unmark 1
+bye
+```
+
+### Expected Output
+```text
+ __  __    _    ____   ____ _   _ ____ 
+|  \/  |  / \  |  _ \ / ___| | | / ___|
+| |\/| | / _ \ | |_) | |   | | | \___ \
+| |  | |/ ___ \|  _ <| |___| |_| |___) |
+|_|  |_/_/   \_\_| \_\\____|\___/|____/
+
+Hello, I am Marcus the Chatbot!
+What can I do for you?
+____________________________________________________________
+____________________________________________________________
+     Please enter task with todo, eg. todo go for a run
+____________________________________________________________
+____________________________________________________________
+     Please enter task with deadline, eg. deadline return book /by Sunday
+____________________________________________________________
+____________________________________________________________
+     Please enter task with event, eg. event project meeting /from Mon 2pm /to 4pm
+____________________________________________________________
+____________________________________________________________
+     What do you mean by "banana", please enter a valid command
+____________________________________________________________
+____________________________________________________________
+     What do you mean by "mark", please enter a valid command
+____________________________________________________________
+____________________________________________________________
+     Please provide a task number to mark.
+____________________________________________________________
+____________________________________________________________
+     That task number does not exist.
+____________________________________________________________
+____________________________________________________________
+     What do you mean by "unmark", please enter a valid command
+____________________________________________________________
+____________________________________________________________
+     Please provide a task number to unmark.
+____________________________________________________________
+____________________________________________________________
+     That task number does not exist.
+____________________________________________________________
+____________________________________________________________
+     Bye. Hope to see you again soon!
+____________________________________________________________
+```
