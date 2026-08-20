@@ -6,11 +6,11 @@ This repository is a starter template for a greenfield Java project used in an i
 
 Unless the user says otherwise, assume that you are assisting a student working on a project in this repository. If the user identifies themselves as an instructor or another project stakeholder, adapt your response to that role.
 
-# Student profile
+# Student profile 
 
 * Prior knowledge: Basic Java and OOP concepts.
-* Level of programming experience: [to be filled]
-* IDE and level of expertise: [to be filled]
+* Level of programming experience: Beginner to Intermediate
+* IDE and level of expertise: IntelliJ IDEA
 
 # Guidance for interacting with users
 
