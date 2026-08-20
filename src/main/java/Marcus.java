@@ -65,13 +65,52 @@ public class Marcus {
                 }
                 System.out.println(DIVIDER);
             } else {
+                Task newTask = createTask(command);
                 System.out.println(DIVIDER);
-                tasks[currIndex] = new Task(command);
-                currIndex++;
-                System.out.println(INDENT + "I just added \"" + command + "\" to the list");
+                if (newTask == null) {
+                    System.out.println(INDENT + "Please use todo, deadline, or event to add a task.");
+                } else {
+                    tasks[currIndex] = newTask;
+                    currIndex++;
+                    System.out.println(INDENT + "Got it. I've added this task:");
+                    System.out.println(INDENT + "  " + newTask);
+                    System.out.println(INDENT + "Now you have " + currIndex + " tasks in the list.");
+                }
                 System.out.println(DIVIDER);
             }
         }
+    }
+
+    /**
+     * Creates a task from a supported task-creation command.
+     *
+     * @param command user command to interpret
+     * @return the new task, or {@code null} when the command is invalid
+     */
+    private static Task createTask(String command) {
+        if (command.startsWith("todo ")) {
+            return new Todo(command.substring(5));
+        }
+
+        if (command.startsWith("deadline ")) {
+            String[] parts = command.substring(9).split(" /by ", 2);
+            if (parts.length == 2 && !parts[0].isBlank() && !parts[1].isBlank()) {
+                return new Deadline(parts[0], parts[1]);
+            }
+        }
+
+        if (command.startsWith("event ")) {
+            String[] descriptionAndFrom = command.substring(6).split(" /from ", 2);
+            if (descriptionAndFrom.length == 2) {
+                String[] fromAndTo = descriptionAndFrom[1].split(" /to ", 2);
+                if (fromAndTo.length == 2 && !descriptionAndFrom[0].isBlank()
+                        && !fromAndTo[0].isBlank() && !fromAndTo[1].isBlank()) {
+                    return new Event(descriptionAndFrom[0], fromAndTo[0], fromAndTo[1]);
+                }
+            }
+        }
+
+        return null;
     }
 
     /**
