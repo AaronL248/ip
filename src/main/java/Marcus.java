@@ -64,6 +64,27 @@ public class Marcus {
                     System.out.println(INDENT + "Please provide a task number to unmark.");
                 }
                 System.out.println(DIVIDER);
+            } else if (command.startsWith("delete ")) {
+                System.out.println(DIVIDER);
+                try {
+                    int taskNumber = Integer.parseInt(command.substring(7));
+                    if (taskNumber < 1 || taskNumber > currIndex) {
+                        System.out.println(INDENT + "That task number does not exist.");
+                    } else {
+                        Task removedTask = tasks[taskNumber - 1];
+                        for (int index = taskNumber - 1; index < currIndex - 1; index++) {
+                            tasks[index] = tasks[index + 1];
+                        }
+                        tasks[currIndex - 1] = null;
+                        currIndex--;
+                        System.out.println(INDENT + "Noted. I've removed this task:");
+                        System.out.println(INDENT + "  " + removedTask);
+                        System.out.println(INDENT + "Now you have " + currIndex + " tasks in the list.");
+                    }
+                } catch (NumberFormatException e) {
+                    System.out.println(INDENT + "Please provide a task number to delete.");
+                }
+                System.out.println(DIVIDER);
             } else {
                 Task newTask = createTask(command);
                 System.out.println(DIVIDER);
