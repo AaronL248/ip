@@ -7,10 +7,8 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
 import java.util.Locale;
-import java.util.Scanner;
 
 public class Marcus {
-    private static final String DIVIDER = "____________________________________________________________";
     private static final String INDENT = "     ";
     private static final Path SAVE_FILE = Path.of("data", "results.txt");
     private static final DateTimeFormatter DISPLAY_DATE_FORMAT =
@@ -76,83 +74,56 @@ public class Marcus {
     }
 
     public static void main(String[] args) {
-        // Banner
-        String banner = " __  __    _    ____   ____ _   _ ____ \n"
-                + "|  \\/  |  / \\  |  _ \\ / ___| | | / ___|\n"
-                + "| |\\/| | / _ \\ | |_) | |   | | | \\___ \\\n"
-                + "| |  | |/ ___ \\|  _ <| |___| |_| |___) |\n"
-                + "|_|  |_/_/   \\_\\_| \\_\\\\____|\\___/|____/\n";
-        System.out.println(banner);
-
-        // Greeting
-        String greeting = "Hello, I am Marcus the Chatbot!\n"
-                + "What can I do for you?";
-        System.out.println(greeting);
-        System.out.println(DIVIDER);
-
-        // Store tasks and let each task manage its own completion state.
+        Ui ui = new Ui();
+        ui.showWelcome();
         Task[] tasks = new Task[100];
-        int currIndex = loadTasks(tasks);
-        Scanner scanner = new Scanner(System.in);
-        while (scanner.hasNextLine()) {
-            String command = scanner.nextLine().trim();
+        int currIndex = loadTasks(tasks, ui);
+        while (ui.hasNextCommand()) {
+            String command = ui.readCommand();
             CommandType commandType = CommandType.from(command);
             if (commandType == CommandType.BYE) {
-                System.out.println(DIVIDER);
-                System.out.println(INDENT + "Bye. Hope to see you again soon!");
-                System.out.println(DIVIDER);
+                ui.showGoodbye();
                 break;
             } else if (commandType == CommandType.LIST) {
-                System.out.println(DIVIDER);
-                System.out.print(arrayToString(tasks));
-                System.out.println(DIVIDER);
+                ui.showTaskList(arrayToString(tasks));
             } else if (commandType == CommandType.FIND) {
-                System.out.println(DIVIDER);
                 try {
                     LocalDate date = LocalDate.parse(commandType.getArguments(command));
-                    System.out.print(tasksOnDateToString(tasks, date));
+                    ui.showTaskList(tasksOnDateToString(tasks, date));
                 } catch (DateTimeParseException e) {
-                    System.out.println(INDENT + "Please provide a date in yyyy-mm-dd format, eg. find 2019-10-15");
+                    ui.showMessage("Please provide a date in yyyy-mm-dd format, eg. find 2019-10-15");
                 }
-                System.out.println(DIVIDER);
             } else if (commandType == CommandType.MARK) {
-                System.out.println(DIVIDER);
                 try {
                     int taskNumber = Integer.parseInt(commandType.getArguments(command));
                     if (taskNumber < 1 || taskNumber > currIndex) {
-                        System.out.println(INDENT + "That task number does not exist.");
+                        ui.showMessage("That task number does not exist.");
                     } else {
                         tasks[taskNumber - 1].markAsDone();
-                        saveTasks(tasks, currIndex);
-                        System.out.println(INDENT + "Nice! I've marked this task as done:");
-                        System.out.println(INDENT + "  " + tasks[taskNumber - 1]);
+                        saveTasks(tasks, currIndex, ui);
+                        ui.showMessage("Nice! I've marked this task as done:\n  " + tasks[taskNumber - 1]);
                     }
                 } catch (NumberFormatException e) {
-                    System.out.println(INDENT + "Please provide a task number to mark.");
+                    ui.showMessage("Please provide a task number to mark.");
                 }
-                System.out.println(DIVIDER);
             } else if (commandType == CommandType.UNMARK) {
-                System.out.println(DIVIDER);
                 try {
                     int taskNumber = Integer.parseInt(commandType.getArguments(command));
                     if (taskNumber < 1 || taskNumber > currIndex) {
-                        System.out.println(INDENT + "That task number does not exist.");
+                        ui.showMessage("That task number does not exist.");
                     } else {
                         tasks[taskNumber - 1].unmarkAsDone();
-                        saveTasks(tasks, currIndex);
-                        System.out.println(INDENT + "OK, I've marked this task as not done yet:");
-                        System.out.println(INDENT + "  " + tasks[taskNumber - 1]);
+                        saveTasks(tasks, currIndex, ui);
+                        ui.showMessage("OK, I've marked this task as not done yet:\n  " + tasks[taskNumber - 1]);
                     }
                 } catch (NumberFormatException e) {
-                    System.out.println(INDENT + "Please provide a task number to unmark.");
+                    ui.showMessage("Please provide a task number to unmark.");
                 }
-                System.out.println(DIVIDER);
             } else if (commandType == CommandType.DELETE) {
-                System.out.println(DIVIDER);
                 try {
                     int taskNumber = Integer.parseInt(commandType.getArguments(command));
                     if (taskNumber < 1 || taskNumber > currIndex) {
-                        System.out.println(INDENT + "That task number does not exist.");
+                        ui.showMessage("That task number does not exist.");
                     } else {
                         Task removedTask = tasks[taskNumber - 1];
                         for (int index = taskNumber - 1; index < currIndex - 1; index++) {
@@ -160,31 +131,26 @@ public class Marcus {
                         }
                         tasks[currIndex - 1] = null;
                         currIndex--;
-                        saveTasks(tasks, currIndex);
-                        System.out.println(INDENT + "Noted. I've removed this task:");
-                        System.out.println(INDENT + "  " + removedTask);
-                        System.out.println(INDENT + "Now you have " + currIndex + " tasks in the list.");
+                        saveTasks(tasks, currIndex, ui);
+                        ui.showMessage("Noted. I've removed this task:\n  " + removedTask
+                                + "\nNow you have " + currIndex + " tasks in the list.");
                     }
                 } catch (NumberFormatException e) {
-                    System.out.println(INDENT + "Please provide a task number to delete.");
+                    ui.showMessage("Please provide a task number to delete.");
                 }
-                System.out.println(DIVIDER);
             } else {
                 Task newTask = createTask(command, commandType);
-                System.out.println(DIVIDER);
                 if (newTask == null) {
-                    System.out.println(INDENT + getErrorMessage(command, commandType));
+                    ui.showMessage(getErrorMessage(command, commandType));
                 } else if (currIndex == tasks.length) {
-                    System.out.println(INDENT + "Your task list is full.");
+                    ui.showMessage("Your task list is full.");
                 } else {
                     tasks[currIndex] = newTask;
                     currIndex++;
-                    saveTasks(tasks, currIndex);
-                    System.out.println(INDENT + "Got it. I've added this task:");
-                    System.out.println(INDENT + "  " + newTask);
-                    System.out.println(INDENT + "Now you have " + currIndex + " tasks in the list.");
+                    saveTasks(tasks, currIndex, ui);
+                    ui.showMessage("Got it. I've added this task:\n  " + newTask
+                            + "\nNow you have " + currIndex + " tasks in the list.");
                 }
-                System.out.println(DIVIDER);
             }
         }
     }
@@ -271,8 +237,9 @@ public class Marcus {
      *
      * @param tasks tasks to save
      * @param taskCount number of populated entries in {@code tasks}
+     * @param ui user interface used to display save errors
      */
-    private static boolean saveTasks(Task[] tasks, int taskCount) {
+    private static boolean saveTasks(Task[] tasks, int taskCount, Ui ui) {
         StringBuilder savedTasks = new StringBuilder();
         for (int index = 0; index < taskCount; index++) {
             savedTasks.append(tasks[index].toFileString()).append(System.lineSeparator());
@@ -283,7 +250,7 @@ public class Marcus {
             Files.writeString(SAVE_FILE, savedTasks.toString(), StandardCharsets.UTF_8);
             return true;
         } catch (IOException e) {
-            System.out.println(INDENT + "Unable to save tasks: " + e.getMessage());
+            ui.showStartupMessage("Unable to save tasks: " + e.getMessage());
             return false;
         }
     }
@@ -292,14 +259,15 @@ public class Marcus {
      * Loads saved tasks from the project's data file.
      *
      * @param tasks array to populate with saved tasks
+     * @param ui user interface used to display loading messages
      * @return number of loaded tasks
      */
-    private static int loadTasks(Task[] tasks) {
+    private static int loadTasks(Task[] tasks, Ui ui) {
         if (!Files.exists(SAVE_FILE)) {
             return 0;
         }
         if (!Files.isRegularFile(SAVE_FILE)) {
-            System.out.println(INDENT + "Unable to load tasks: " + SAVE_FILE + " is not a file.");
+            ui.showStartupMessage("Unable to load tasks: " + SAVE_FILE + " is not a file.");
             return 0;
         }
 
@@ -311,19 +279,19 @@ public class Marcus {
                     continue;
                 }
                 if (taskCount == tasks.length) {
-                    System.out.println(INDENT + "Only the first " + tasks.length + " saved tasks were loaded.");
+                    ui.showStartupMessage("Only the first " + tasks.length + " saved tasks were loaded.");
                     break;
                 }
                 Task task = createTaskFromFile(savedLine);
                 if (task == null) {
-                    System.out.println(INDENT + "Skipped invalid saved task: " + savedLine);
+                    ui.showStartupMessage("Skipped invalid saved task: " + savedLine);
                     continue;
                 }
                 tasks[taskCount] = task;
                 taskCount++;
             }
         } catch (IOException e) {
-            System.out.println(INDENT + "Unable to load tasks: " + e.getMessage());
+            ui.showStartupMessage("Unable to load tasks: " + e.getMessage());
         }
         return taskCount;
     }
