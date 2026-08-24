@@ -32,7 +32,7 @@ ____________________________________________________________
 ### Input
 ```text
 todo read book
-deadline return book /by Sunday
+deadline return book /by 2019-10-15
 event project meeting /from Mon 2pm /to 4pm
 mark 1
 list
@@ -59,7 +59,7 @@ ____________________________________________________________
 ____________________________________________________________
 ____________________________________________________________
      Got it. I've added this task:
-       [D][ ] return book (by: Sunday)
+       [D][ ] return book (by: Oct 15 2019)
      Now you have 2 tasks in the list.
 ____________________________________________________________
 ____________________________________________________________
@@ -74,7 +74,7 @@ ____________________________________________________________
 ____________________________________________________________
      Here are the tasks in your list:
      1.[T][X] read book
-     2.[D][ ] return book (by: Sunday)
+     2.[D][ ] return book (by: Oct 15 2019)
      3.[E][ ] project meeting (from: Mon 2pm to: 4pm)
 ____________________________________________________________
 ____________________________________________________________
@@ -84,7 +84,7 @@ ____________________________________________________________
 ____________________________________________________________
      Here are the tasks in your list:
      1.[T][ ] read book
-     2.[D][ ] return book (by: Sunday)
+     2.[D][ ] return book (by: Oct 15 2019)
      3.[E][ ] project meeting (from: Mon 2pm to: 4pm)
 ____________________________________________________________
 ____________________________________________________________
@@ -95,7 +95,7 @@ ____________________________________________________________
 ### Expected Saved Tasks
 ```text
 T | 0 | read book
-D | 0 | return book | Sunday
+D | 0 | return book | 2019-10-15
 E | 0 | project meeting | Mon 2pm | 4pm
 ```
 
@@ -107,6 +107,7 @@ E | 0 | project meeting | Mon 2pm | 4pm
 ```text
 todo
 deadline whats up
+deadline return book /by 2019-02-30
 event run
 banana
 mark
@@ -134,7 +135,10 @@ ____________________________________________________________
      Please enter task with todo, eg. todo go for a run
 ____________________________________________________________
 ____________________________________________________________
-     Please enter task with deadline, eg. deadline return book /by Sunday
+     Please enter a deadline date in yyyy-mm-dd format, eg. deadline return book /by 2019-10-15
+____________________________________________________________
+____________________________________________________________
+     Please enter a deadline date in yyyy-mm-dd format, eg. deadline return book /by 2019-10-15
 ____________________________________________________________
 ____________________________________________________________
      Please enter task with event, eg. event project meeting /from Mon 2pm /to 4pm
@@ -175,7 +179,7 @@ ____________________________________________________________
 ### Input
 ```text
 todo read book
-deadline return book /by June 6th
+deadline return book /by 2019-06-06
 event project meeting /from Aug 6th 2pm /to 4pm
 mark 1
 mark 2
@@ -203,7 +207,7 @@ ____________________________________________________________
 ____________________________________________________________
 ____________________________________________________________
      Got it. I've added this task:
-       [D][ ] return book (by: June 6th)
+       [D][ ] return book (by: Jun 06 2019)
      Now you have 2 tasks in the list.
 ____________________________________________________________
 ____________________________________________________________
@@ -217,12 +221,12 @@ ____________________________________________________________
 ____________________________________________________________
 ____________________________________________________________
      Nice! I've marked this task as done:
-       [D][X] return book (by: June 6th)
+       [D][X] return book (by: Jun 06 2019)
 ____________________________________________________________
 ____________________________________________________________
      Here are the tasks in your list:
      1.[T][X] read book
-     2.[D][X] return book (by: June 6th)
+     2.[D][X] return book (by: Jun 06 2019)
      3.[E][ ] project meeting (from: Aug 6th 2pm to: 4pm)
 ____________________________________________________________
 ____________________________________________________________
@@ -233,7 +237,7 @@ ____________________________________________________________
 ____________________________________________________________
      Here are the tasks in your list:
      1.[T][X] read book
-     2.[D][X] return book (by: June 6th)
+     2.[D][X] return book (by: Jun 06 2019)
 ____________________________________________________________
 ____________________________________________________________
      Bye. Hope to see you again soon!
@@ -243,7 +247,7 @@ ____________________________________________________________
 ### Expected Saved Tasks
 ```text
 T | 1 | read book
-D | 1 | return book | June 6th
+D | 1 | return book | 2019-06-06
 ```
 
 ## Test Case: Delete from the middle, first, and final positions
@@ -253,7 +257,7 @@ D | 1 | return book | June 6th
 ### Input
 ```text
 todo first
-deadline second /by Friday
+deadline second /by 2019-10-18
 event third /from 2pm /to 3pm
 delete 2
 list
@@ -283,7 +287,7 @@ ____________________________________________________________
 ____________________________________________________________
 ____________________________________________________________
      Got it. I've added this task:
-       [D][ ] second (by: Friday)
+       [D][ ] second (by: Oct 18 2019)
      Now you have 2 tasks in the list.
 ____________________________________________________________
 ____________________________________________________________
@@ -293,7 +297,7 @@ ____________________________________________________________
 ____________________________________________________________
 ____________________________________________________________
      Noted. I've removed this task:
-       [D][ ] second (by: Friday)
+       [D][ ] second (by: Oct 18 2019)
      Now you have 2 tasks in the list.
 ____________________________________________________________
 ____________________________________________________________
@@ -371,7 +375,7 @@ ____________________________________________________________
 ### Initial Saved Tasks
 ```text
 T | 1 | read book
-D | 0 | return book | June 6th
+D | 0 | return book | 2019-06-06
 E | 1 | project meeting | Aug 6th 2pm | 4pm
 ```
 
@@ -395,7 +399,7 @@ ____________________________________________________________
 ____________________________________________________________
      Here are the tasks in your list:
      1.[T][X] read book
-     2.[D][ ] return book (by: June 6th)
+     2.[D][ ] return book (by: Jun 06 2019)
      3.[E][X] project meeting (from: Aug 6th 2pm to: 4pm)
 ____________________________________________________________
 ____________________________________________________________
@@ -406,7 +410,7 @@ ____________________________________________________________
 ### Expected Saved Tasks
 ```text
 T | 1 | read book
-D | 0 | return book | June 6th
+D | 0 | return book | 2019-06-06
 E | 1 | project meeting | Aug 6th 2pm | 4pm
 ```
 
@@ -420,7 +424,7 @@ T | 1 | read book
 D | 2 | invalid status
 E | 0 | missing fields
 X | 0 | unknown type
-D | 0 | return book | Sunday
+D | 0 | return book | 2019-10-15
 ```
 
 ### Input
@@ -446,7 +450,7 @@ ____________________________________________________________
 ____________________________________________________________
      Here are the tasks in your list:
      1.[T][X] read book
-     2.[D][ ] return book (by: Sunday)
+     2.[D][ ] return book (by: Oct 15 2019)
 ____________________________________________________________
 ____________________________________________________________
      Bye. Hope to see you again soon!
@@ -459,5 +463,63 @@ T | 1 | read book
 D | 2 | invalid status
 E | 0 | missing fields
 X | 0 | unknown type
-D | 0 | return book | Sunday
+D | 0 | return book | 2019-10-15
+```
+
+## Test Case: Find tasks by date
+
+**Aim:** Verify that `find yyyy-mm-dd` lists matching deadlines and events with ISO date-times, keeps their original list numbers, and handles no matches and invalid dates.
+
+### Initial Saved Tasks
+```text
+T | 0 | buy bread
+D | 1 | return book | 2019-10-15
+D | 0 | submit report | 2019-10-16
+E | 0 | team meeting | 2019-10-15 14:00 | 2019-10-15 16:00
+D | 0 | return book | 2019-02-12
+```
+
+### Input
+```text
+find 2019-10-15
+find 2019-02-12
+find 2019-02-19
+find 2019-19-02
+find tomorrow
+bye
+```
+
+### Expected Output
+```text
+ __  __    _    ____   ____ _   _ ____ 
+|  \/  |  / \  |  _ \ / ___| | | / ___|
+| |\/| | / _ \ | |_) | |   | | | \___ \
+| |  | |/ ___ \|  _ <| |___| |_| |___) |
+|_|  |_/_/   \_\_| \_\\____|\___/|____/
+
+Hello, I am Marcus the Chatbot!
+What can I do for you?
+____________________________________________________________
+____________________________________________________________
+     Here are the tasks occurring on Oct 15 2019:
+     2.[D][X] return book (by: Oct 15 2019)
+     4.[E][ ] team meeting (from: 2019-10-15 14:00 to: 2019-10-15 16:00)
+____________________________________________________________
+____________________________________________________________
+     Here are the tasks occurring on Feb 12 2019:
+     5.[D][ ] return book (by: Feb 12 2019)
+____________________________________________________________
+____________________________________________________________
+     Here are the tasks occurring on Feb 19 2019:
+     There are no tasks occurring on Feb 19 2019.
+____________________________________________________________
+____________________________________________________________
+     Please provide a date in yyyy-mm-dd format, eg. find 2019-10-15
+____________________________________________________________
+____________________________________________________________
+     Please provide a date in yyyy-mm-dd format, eg. find 2019-10-15
+____________________________________________________________
+____________________________________________________________
+     Bye. Hope to see you again soon!
+____________________________________________________________
 ```
