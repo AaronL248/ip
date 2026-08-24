@@ -1,0 +1,6 @@
+T | 0 | list
+D | 0 | return michael jackson | night
+T | 0 | meet lebron
+E | 1 | print things | morning | /mornight
+T | 0 | meet jake
+T | 0 | do things

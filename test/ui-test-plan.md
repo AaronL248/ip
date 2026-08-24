@@ -92,6 +92,13 @@ ____________________________________________________________
 ____________________________________________________________
 ```
 
+### Expected Saved Tasks
+```text
+T | 0 | read book
+D | 0 | return book | Sunday
+E | 0 | project meeting | Mon 2pm | 4pm
+```
+
 ## Test Case: Reject every invalid command form
 
 **Aim:** Verify every current error-response path: incomplete task commands, unknown commands, missing status-command arguments, non-numeric task numbers, and task numbers outside the list.
@@ -229,6 +236,12 @@ ____________________________________________________________
 ____________________________________________________________
 ```
 
+### Expected Saved Tasks
+```text
+T | 1 | read book
+D | 1 | return book | June 6th
+```
+
 ## Test Case: Delete from the middle, first, and final positions
 
 **Aim:** Verify that deletion shifts later tasks into the correct position, retains their status, and supports deleting until the list is empty.
@@ -345,4 +358,50 @@ ____________________________________________________________
 ____________________________________________________________
      Bye. Hope to see you again soon!
 ____________________________________________________________
+```
+
+## Test Case: Load saved tasks at startup
+
+**Aim:** Verify that a saved to-do, deadline, and event are restored with their completion status and timing details when Marcus starts.
+
+### Initial Saved Tasks
+```text
+T | 1 | read book
+D | 0 | return book | June 6th
+E | 1 | project meeting | Aug 6th 2pm | 4pm
+```
+
+### Input
+```text
+list
+bye
+```
+
+### Expected Output
+```text
+ __  __    _    ____   ____ _   _ ____ 
+|  \/  |  / \  |  _ \ / ___| | | / ___|
+| |\/| | / _ \ | |_) | |   | | | \___ \
+| |  | |/ ___ \|  _ <| |___| |_| |___) |
+|_|  |_/_/   \_\_| \_\\____|\___/|____/
+
+Hello, I am Marcus the Chatbot!
+What can I do for you?
+____________________________________________________________
+____________________________________________________________
+     Here are the tasks in your list:
+     1.[T][X] read book
+     2.[D][ ] return book (by: June 6th)
+     3.[E][X] project meeting (from: Aug 6th 2pm to: 4pm)
+____________________________________________________________
+____________________________________________________________
+     Bye. Hope to see you again soon!
+____________________________________________________________
+```
+
+### Expected Saved Tasks
+```text
+T | 1 | read book
+D | 0 | return book | June 6th
+E | 1 | project meeting | Aug 6th 2pm | 4pm
 ```

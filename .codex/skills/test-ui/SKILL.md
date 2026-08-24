@@ -20,7 +20,8 @@ Each test case must state its aim, input commands, and the complete expected pro
    ```
 
 3. The runner compiles the Java sources into a temporary directory, runs every
-   case in order, and prints the console input and output for each case.
+   case in an isolated temporary working directory, and prints the console
+   input and output for each case.
 4. It stops at the first failed case and shows the expected and actual outputs.
    Fix the issue before continuing with later tests.
 
@@ -48,3 +49,24 @@ complete console output here
 The expected-output block must include all prompts, dividers, and spacing that
 the user can see. Do not include the input commands themselves; the runner
 records those separately.
+
+For a case that writes a file, append an optional block immediately after the
+expected output. It checks `data/results.txt` relative to the program's working
+directory:
+
+````markdown
+### Expected Saved Tasks
+```text
+T | 0 | read book
+```
+````
+
+To test loading, put an optional initial-file block before the input. The
+runner seeds `data/results.txt` with its contents before starting the program:
+
+````markdown
+### Initial Saved Tasks
+```text
+T | 1 | read book
+```
+````

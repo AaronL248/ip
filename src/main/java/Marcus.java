@@ -1,8 +1,14 @@
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.util.List;
 import java.util.Scanner;
 
 public class Marcus {
     private static final String DIVIDER = "____________________________________________________________";
     private static final String INDENT = "     ";
+    private static final Path SAVE_FILE = Path.of("data", "results.txt");
 
     /** Identifies the commands understood by Marcus. */
     private enum CommandType {
@@ -77,7 +83,7 @@ public class Marcus {
 
         // Store tasks and let each task manage its own completion state.
         Task[] tasks = new Task[100];
-        int currIndex = 0;
+        int currIndex = loadTasks(tasks);
         Scanner scanner = new Scanner(System.in);
         while (scanner.hasNextLine()) {
             String command = scanner.nextLine();
@@ -99,6 +105,7 @@ public class Marcus {
                         System.out.println(INDENT + "That task number does not exist.");
                     } else {
                         tasks[taskNumber - 1].markAsDone();
+                        saveTasks(tasks, currIndex);
                         System.out.println(INDENT + "Nice! I've marked this task as done:");
                         System.out.println(INDENT + "  " + tasks[taskNumber - 1]);
                     }
@@ -114,6 +121,7 @@ public class Marcus {
                         System.out.println(INDENT + "That task number does not exist.");
                     } else {
                         tasks[taskNumber - 1].unmarkAsDone();
+                        saveTasks(tasks, currIndex);
                         System.out.println(INDENT + "OK, I've marked this task as not done yet:");
                         System.out.println(INDENT + "  " + tasks[taskNumber - 1]);
                     }
@@ -134,6 +142,7 @@ public class Marcus {
                         }
                         tasks[currIndex - 1] = null;
                         currIndex--;
+                        saveTasks(tasks, currIndex);
                         System.out.println(INDENT + "Noted. I've removed this task:");
                         System.out.println(INDENT + "  " + removedTask);
                         System.out.println(INDENT + "Now you have " + currIndex + " tasks in the list.");
@@ -150,6 +159,7 @@ public class Marcus {
                 } else {
                     tasks[currIndex] = newTask;
                     currIndex++;
+                    saveTasks(tasks, currIndex);
                     System.out.println(INDENT + "Got it. I've added this task:");
                     System.out.println(INDENT + "  " + newTask);
                     System.out.println(INDENT + "Now you have " + currIndex + " tasks in the list.");
@@ -213,6 +223,70 @@ public class Marcus {
             return "Please enter task with event, eg. event project meeting /from Mon 2pm /to 4pm";
         }
         return "What do you mean by \"" + command + "\", please enter a valid command";
+    }
+
+    /**
+     * Saves all current tasks to the project's data file.
+     *
+     * @param tasks tasks to save
+     * @param taskCount number of populated entries in {@code tasks}
+     */
+    private static void saveTasks(Task[] tasks, int taskCount) {
+        StringBuilder savedTasks = new StringBuilder();
+        for (int index = 0; index < taskCount; index++) {
+            savedTasks.append(tasks[index].toFileString()).append(System.lineSeparator());
+        }
+
+        try {
+            Files.createDirectories(SAVE_FILE.getParent());
+            Files.writeString(SAVE_FILE, savedTasks.toString(), StandardCharsets.UTF_8);
+        } catch (IOException e) {
+            System.out.println(INDENT + "Unable to save tasks: " + e.getMessage());
+        }
+    }
+
+    /**
+     * Loads saved tasks from the project's data file.
+     *
+     * @param tasks array to populate with saved tasks
+     * @return number of loaded tasks
+     */
+    private static int loadTasks(Task[] tasks) {
+        if (!Files.exists(SAVE_FILE)) {
+            return 0;
+        }
+
+        int taskCount = 0;
+        try {
+            List<String> savedLines = Files.readAllLines(SAVE_FILE, StandardCharsets.UTF_8);
+            for (String savedLine : savedLines) {
+                tasks[taskCount] = createTaskFromFile(savedLine);
+                taskCount++;
+            }
+        } catch (IOException e) {
+            System.out.println(INDENT + "Unable to load tasks: " + e.getMessage());
+        }
+        return taskCount;
+    }
+
+    /**
+     * Recreates one task from its pipe-delimited saved representation.
+     *
+     * @param savedLine one line from the data file
+     * @return the reconstructed task
+     */
+    private static Task createTaskFromFile(String savedLine) {
+        String[] parts = savedLine.split(" \\| ", -1);
+        Task task = switch (parts[0]) {
+        case "T" -> new Todo(parts[2]);
+        case "D" -> new Deadline(parts[2], parts[3]);
+        case "E" -> new Event(parts[2], parts[3], parts[4]);
+        default -> throw new IllegalArgumentException("Unknown task type: " + parts[0]);
+        };
+        if (parts[1].equals("1")) {
+            task.markAsDone();
+        }
+        return task;
     }
 
     /**
