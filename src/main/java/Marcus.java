@@ -1,18 +1,24 @@
 import java.io.IOException;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
+import java.util.Locale;
 import java.util.Scanner;
 
 public class Marcus {
     private static final String DIVIDER = "____________________________________________________________";
     private static final String INDENT = "     ";
     private static final Path SAVE_FILE = Path.of("data", "results.txt");
+    private static final DateTimeFormatter DISPLAY_DATE_FORMAT =
+            DateTimeFormatter.ofPattern("MMM dd uuuu", Locale.ENGLISH);
 
     /** Identifies the commands understood by Marcus. */
     private enum CommandType {
-        BYE("bye"), LIST("list"), MARK("mark"), UNMARK("unmark"), DELETE("delete"),
+        BYE("bye"), LIST("list"), FIND("find"), MARK("mark"), UNMARK("unmark"), DELETE("delete"),
         TODO("todo"), DEADLINE("deadline"), EVENT("event"), UNKNOWN("");
 
         private final String keyword;
@@ -33,6 +39,9 @@ public class Marcus {
             }
             if (command.equals(LIST.keyword)) {
                 return LIST;
+            }
+            if (command.equals(FIND.keyword) || command.startsWith(FIND.keyword + " ")) {
+                return FIND;
             }
             if (command.equals(MARK.keyword) || command.startsWith(MARK.keyword + " ")) {
                 return MARK;
@@ -96,6 +105,15 @@ public class Marcus {
             } else if (commandType == CommandType.LIST) {
                 System.out.println(DIVIDER);
                 System.out.print(arrayToString(tasks));
+                System.out.println(DIVIDER);
+            } else if (commandType == CommandType.FIND) {
+                System.out.println(DIVIDER);
+                try {
+                    LocalDate date = LocalDate.parse(commandType.getArguments(command));
+                    System.out.print(tasksOnDateToString(tasks, date));
+                } catch (DateTimeParseException e) {
+                    System.out.println(INDENT + "Please provide a date in yyyy-mm-dd format, eg. find 2019-10-15");
+                }
                 System.out.println(DIVIDER);
             } else if (commandType == CommandType.MARK) {
                 System.out.println(DIVIDER);
@@ -189,7 +207,11 @@ public class Marcus {
         if (commandType == CommandType.DEADLINE) {
             String[] parts = commandType.getArguments(command).split(" /by ", 2);
             if (parts.length == 2 && isValidTaskPart(parts[0]) && isValidTaskPart(parts[1])) {
-                return new Deadline(parts[0], parts[1]);
+                try {
+                    return new Deadline(parts[0], LocalDate.parse(parts[1]));
+                } catch (DateTimeParseException e) {
+                    return null;
+                }
             }
         }
 
@@ -226,7 +248,7 @@ public class Marcus {
             return "Please enter task with todo, eg. todo go for a run";
         }
         if (commandType == CommandType.DEADLINE) {
-            return "Please enter task with deadline, eg. deadline return book /by Sunday";
+            return "Please enter a deadline date in yyyy-mm-dd format, eg. deadline return book /by 2019-10-15";
         }
         if (commandType == CommandType.EVENT) {
             return "Please enter task with event, eg. event project meeting /from Mon 2pm /to 4pm";
@@ -323,7 +345,11 @@ public class Marcus {
             task = new Todo(parts[2]);
         } else if (parts[0].equals("D") && parts.length == 4
                 && isValidTaskPart(parts[2]) && isValidTaskPart(parts[3])) {
-            task = new Deadline(parts[2], parts[3]);
+            try {
+                task = new Deadline(parts[2], LocalDate.parse(parts[3]));
+            } catch (DateTimeParseException e) {
+                return null;
+            }
         } else if (parts[0].equals("E") && parts.length == 5
                 && isValidTaskPart(parts[2]) && isValidTaskPart(parts[3]) && isValidTaskPart(parts[4])) {
             task = new Event(parts[2], parts[3], parts[4]);
@@ -350,5 +376,29 @@ public class Marcus {
             currIndex++;
         }
         return res.toString();
+    }
+
+    /**
+     * Formats tasks that occur on a specified date, retaining their task-list numbers.
+     *
+     * @param tasks tasks to search
+     * @param date date to match
+     * @return formatted matching tasks or a message when none match
+     */
+    private static String tasksOnDateToString(Task[] tasks, LocalDate date) {
+        StringBuilder result = new StringBuilder(INDENT + "Here are the tasks occurring on "
+                + date.format(DISPLAY_DATE_FORMAT) + ":\n");
+        boolean hasMatches = false;
+        for (int index = 0; index < tasks.length && tasks[index] != null; index++) {
+            if (tasks[index].occursOn(date)) {
+                result.append(INDENT).append(index + 1).append(".").append(tasks[index]).append("\n");
+                hasMatches = true;
+            }
+        }
+        if (!hasMatches) {
+            result.append(INDENT).append("There are no tasks occurring on ")
+                    .append(date.format(DISPLAY_DATE_FORMAT)).append(".\n");
+        }
+        return result.toString();
     }
 }
