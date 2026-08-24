@@ -15,9 +15,11 @@ ROOT = Path.cwd()
 PLAN_PATH = ROOT / "test" / "ui-test-plan.md"
 SOURCE_DIR = ROOT / "src" / "main" / "java"
 MAIN_CLASS = "Marcus"
+SAVE_FILE = Path("data") / "results.txt"
 CASE_PATTERN = re.compile(
-    r"^## Test Case: (?P<name>.+?)\n.*?^### Input\s*\n```text\n(?P<input>.*?)\n```"
-    r"\s*\n.*?^### Expected Output\s*\n```text\n(?P<expected>.*?)\n```",
+    r"^## Test Case: (?P<name>.+?)\n(?P<setup>.*?)^### Input\s*\n```text\n(?P<input>.*?)\n```"
+    r"\s*\n.*?^### Expected Output\s*\n```text\n(?P<expected>.*?)\n```"
+    r"(?:\n\n### Expected Saved Tasks\s*\n```text\n(?P<saved>.*?)\n```)?",
     re.MULTILINE | re.DOTALL,
 )
 
@@ -33,14 +35,21 @@ def print_block(label: str, content: str) -> None:
     print(content if content else "<empty>")
 
 
-def load_cases() -> list[tuple[str, str, str]]:
+def load_cases() -> list[tuple[str, str, str, str | None, str | None]]:
     """Read named test cases from the project's Markdown test plan."""
     if not PLAN_PATH.is_file():
         raise FileNotFoundError(f"Test plan not found: {PLAN_PATH}")
-    cases = [
-        (match.group("name").strip(), match.group("input"), match.group("expected"))
-        for match in CASE_PATTERN.finditer(PLAN_PATH.read_text())
-    ]
+    cases = []
+    for match in CASE_PATTERN.finditer(PLAN_PATH.read_text()):
+        initial_match = re.search(
+            r"^### Initial Saved Tasks\s*\n```text\n(?P<initial>.*?)\n```",
+            match.group("setup"),
+            re.MULTILINE | re.DOTALL,
+        )
+        cases.append((
+            match.group("name").strip(), match.group("input"), match.group("expected"), match.group("saved"),
+            initial_match.group("initial") if initial_match else None,
+        ))
     if not cases:
         raise ValueError("No test cases found. Follow the format in the test-ui skill.")
     return cases
@@ -72,12 +81,19 @@ def main() -> int:
     build_dir = Path(tempfile.mkdtemp(prefix="ui-test-"))
     try:
         compile_program(build_dir)
-        for number, (name, commands, expected) in enumerate(cases, start=1):
+        for number, (name, commands, expected, expected_saved_tasks, initial_saved_tasks) in enumerate(cases, start=1):
+            case_dir = build_dir / f"case-{number}"
+            case_dir.mkdir()
+            if initial_saved_tasks is not None:
+                saved_file = case_dir / SAVE_FILE
+                saved_file.parent.mkdir()
+                saved_file.write_text(initial_saved_tasks + "\n")
             result = subprocess.run(
                 ["java", "-cp", str(build_dir), MAIN_CLASS],
                 input=commands + "\n",
                 capture_output=True,
                 text=True,
+                cwd=case_dir,
             )
             print(f"\nTest {number}: {name}")
             print_block("Console input", commands)
@@ -92,6 +108,16 @@ def main() -> int:
                 if result.stderr:
                     print_block("Program error", result.stderr)
                 return 1
+
+            if expected_saved_tasks is not None:
+                saved_file = case_dir / SAVE_FILE
+                actual_saved_tasks = saved_file.read_text() if saved_file.is_file() else ""
+                print_block("Saved tasks file", actual_saved_tasks)
+                if normalise(actual_saved_tasks) != normalise(expected_saved_tasks):
+                    print("RESULT: FAIL")
+                    print_block("Expected saved tasks", expected_saved_tasks)
+                    print_block("Actual saved tasks", actual_saved_tasks)
+                    return 1
             print("RESULT: PASS")
     except RuntimeError:
         return 1

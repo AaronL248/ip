@@ -35,6 +35,15 @@ public class Task {
     }
 
     /**
+     * Returns this task in the format used for persistence.
+     *
+     * @return task type, completion state, and description separated by pipes
+     */
+    public String toFileString() {
+        return "T | " + (isDone ? "1" : "0") + " | " + description;
+    }
+
+    /**
      * Returns this task in its display format.
      *
      * @return status icon followed by the task description
