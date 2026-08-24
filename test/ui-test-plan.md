@@ -115,6 +115,7 @@ mark 1
 unmark
 unmark two
 unmark 1
+todo invalid | task
 bye
 ```
 
@@ -142,7 +143,7 @@ ____________________________________________________________
      What do you mean by "banana", please enter a valid command
 ____________________________________________________________
 ____________________________________________________________
-     What do you mean by "mark", please enter a valid command
+     Please provide a task number to mark.
 ____________________________________________________________
 ____________________________________________________________
      Please provide a task number to mark.
@@ -151,13 +152,16 @@ ____________________________________________________________
      That task number does not exist.
 ____________________________________________________________
 ____________________________________________________________
-     What do you mean by "unmark", please enter a valid command
+     Please provide a task number to unmark.
 ____________________________________________________________
 ____________________________________________________________
      Please provide a task number to unmark.
 ____________________________________________________________
 ____________________________________________________________
      That task number does not exist.
+____________________________________________________________
+____________________________________________________________
+     Task details cannot contain the | character.
 ____________________________________________________________
 ____________________________________________________________
      Bye. Hope to see you again soon!
@@ -347,7 +351,7 @@ Hello, I am Marcus the Chatbot!
 What can I do for you?
 ____________________________________________________________
 ____________________________________________________________
-     What do you mean by "delete", please enter a valid command
+     Please provide a task number to delete.
 ____________________________________________________________
 ____________________________________________________________
      Please provide a task number to delete.
@@ -404,4 +408,56 @@ ____________________________________________________________
 T | 1 | read book
 D | 0 | return book | June 6th
 E | 1 | project meeting | Aug 6th 2pm | 4pm
+```
+
+## Test Case: Skip malformed saved task records
+
+**Aim:** Verify that invalid saved lines are reported and skipped while valid records continue to load.
+
+### Initial Saved Tasks
+```text
+T | 1 | read book
+D | 2 | invalid status
+E | 0 | missing fields
+X | 0 | unknown type
+D | 0 | return book | Sunday
+```
+
+### Input
+```text
+list
+bye
+```
+
+### Expected Output
+```text
+ __  __    _    ____   ____ _   _ ____ 
+|  \/  |  / \  |  _ \ / ___| | | / ___|
+| |\/| | / _ \ | |_) | |   | | | \___ \
+| |  | |/ ___ \|  _ <| |___| |_| |___) |
+|_|  |_/_/   \_\_| \_\\____|\___/|____/
+
+Hello, I am Marcus the Chatbot!
+What can I do for you?
+____________________________________________________________
+     Skipped invalid saved task: D | 2 | invalid status
+     Skipped invalid saved task: E | 0 | missing fields
+     Skipped invalid saved task: X | 0 | unknown type
+____________________________________________________________
+     Here are the tasks in your list:
+     1.[T][X] read book
+     2.[D][ ] return book (by: Sunday)
+____________________________________________________________
+____________________________________________________________
+     Bye. Hope to see you again soon!
+____________________________________________________________
+```
+
+### Expected Saved Tasks
+```text
+T | 1 | read book
+D | 2 | invalid status
+E | 0 | missing fields
+X | 0 | unknown type
+D | 0 | return book | Sunday
 ```
