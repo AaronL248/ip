@@ -25,6 +25,82 @@ ____________________________________________________________
 ____________________________________________________________
 ```
 
+## Test Case: End-to-end command, task-list, and storage workflow
+
+**Aim:** Verify that loaded tasks can be interpreted, added, marked, deleted, searched, listed, and saved correctly in one session after the OOP refactor.
+
+### Initial Saved Tasks
+```text
+T | 0 | prepare slides
+D | 0 | submit report | 2019-10-15
+E | 0 | team meeting | 2019-10-15 14:00 | 2019-10-15 16:00
+```
+
+### Input
+```text
+todo buy bread
+mark 1
+delete 2
+event review /from 2019-10-16 09:00 /to 2019-10-16 10:00
+find 2019-10-15
+list
+bye
+```
+
+### Expected Output
+```text
+ __  __    _    ____   ____ _   _ ____ 
+|  \/  |  / \  |  _ \ / ___| | | / ___|
+| |\/| | / _ \ | |_) | |   | | | \___ \
+| |  | |/ ___ \|  _ <| |___| |_| |___) |
+|_|  |_/_/   \_\_| \_\\____|\___/|____/
+
+Hello, I am Marcus the Chatbot!
+What can I do for you?
+____________________________________________________________
+____________________________________________________________
+     Got it. I've added this task:
+       [T][ ] buy bread
+     Now you have 4 tasks in the list.
+____________________________________________________________
+____________________________________________________________
+     Nice! I've marked this task as done:
+       [T][X] prepare slides
+____________________________________________________________
+____________________________________________________________
+     Noted. I've removed this task:
+       [D][ ] submit report (by: Oct 15 2019)
+     Now you have 3 tasks in the list.
+____________________________________________________________
+____________________________________________________________
+     Got it. I've added this task:
+       [E][ ] review (from: 2019-10-16 09:00 to: 2019-10-16 10:00)
+     Now you have 4 tasks in the list.
+____________________________________________________________
+____________________________________________________________
+     Here are the tasks occurring on Oct 15 2019:
+     2.[E][ ] team meeting (from: 2019-10-15 14:00 to: 2019-10-15 16:00)
+____________________________________________________________
+____________________________________________________________
+     Here are the tasks in your list:
+     1.[T][X] prepare slides
+     2.[E][ ] team meeting (from: 2019-10-15 14:00 to: 2019-10-15 16:00)
+     3.[T][ ] buy bread
+     4.[E][ ] review (from: 2019-10-16 09:00 to: 2019-10-16 10:00)
+____________________________________________________________
+____________________________________________________________
+     Bye. Hope to see you again soon!
+____________________________________________________________
+```
+
+### Expected Saved Tasks
+```text
+T | 1 | prepare slides
+E | 0 | team meeting | 2019-10-15 14:00 | 2019-10-15 16:00
+T | 0 | buy bread
+E | 0 | review | 2019-10-16 09:00 | 2019-10-16 10:00
+```
+
 ## Test Case: Add, mark, unmark, and list typed tasks
 
 **Aim:** Verify that each complete command is recognised by its command type, its remaining text is parsed as task details, and the resulting typed tasks can be marked, unmarked, and listed.
