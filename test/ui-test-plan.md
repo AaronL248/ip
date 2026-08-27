@@ -25,6 +25,144 @@ ____________________________________________________________
 ____________________________________________________________
 ```
 
+## Test Case: Enforce command boundaries and task-number ranges
+
+**Aim:** Verify that commands are case-sensitive, command-name prefixes are not accepted, blank input is handled, and zero, negative, and out-of-range task numbers cannot change a valid task.
+
+### Input
+```text
+
+LIST
+listing
+todo alpha
+mark 0
+mark -1
+mark 2
+unmark 0
+delete -1
+delete 2
+list
+bye
+```
+
+### Expected Output
+```text
+ __  __    _    ____   ____ _   _ ____ 
+|  \/  |  / \  |  _ \ / ___| | | / ___|
+| |\/| | / _ \ | |_) | |   | | | \___ \
+| |  | |/ ___ \|  _ <| |___| |_| |___) |
+|_|  |_/_/   \_\_| \_\\____|\___/|____/
+
+Hello, I am Marcus the Chatbot!
+What can I do for you?
+____________________________________________________________
+____________________________________________________________
+     Please enter a command.
+____________________________________________________________
+____________________________________________________________
+     What do you mean by "LIST", please enter a valid command
+____________________________________________________________
+____________________________________________________________
+     What do you mean by "listing", please enter a valid command
+____________________________________________________________
+____________________________________________________________
+     Got it. I've added this task:
+       [T][ ] alpha
+     Now you have 1 tasks in the list.
+____________________________________________________________
+____________________________________________________________
+     That task number does not exist.
+____________________________________________________________
+____________________________________________________________
+     That task number does not exist.
+____________________________________________________________
+____________________________________________________________
+     That task number does not exist.
+____________________________________________________________
+____________________________________________________________
+     That task number does not exist.
+____________________________________________________________
+____________________________________________________________
+     That task number does not exist.
+____________________________________________________________
+____________________________________________________________
+     That task number does not exist.
+____________________________________________________________
+____________________________________________________________
+     Here are the tasks in your list:
+     1.[T][ ] alpha
+____________________________________________________________
+____________________________________________________________
+     Bye. Hope to see you again soon!
+____________________________________________________________
+```
+
+### Expected Saved Tasks
+```text
+T | 0 | alpha
+```
+
+## Test Case: Find a multi-day event at its boundaries
+
+**Aim:** Verify that `find` includes a dated event on its start date, intermediate dates, and end date, but excludes dates immediately outside that range.
+
+### Input
+```text
+event conference /from 2019-10-15 23:00 /to 2019-10-17 01:00
+find 2019-10-14
+find 2019-10-15
+find 2019-10-16
+find 2019-10-17
+find 2019-10-18
+bye
+```
+
+### Expected Output
+```text
+ __  __    _    ____   ____ _   _ ____ 
+|  \/  |  / \  |  _ \ / ___| | | / ___|
+| |\/| | / _ \ | |_) | |   | | | \___ \
+| |  | |/ ___ \|  _ <| |___| |_| |___) |
+|_|  |_/_/   \_\_| \_\\____|\___/|____/
+
+Hello, I am Marcus the Chatbot!
+What can I do for you?
+____________________________________________________________
+____________________________________________________________
+     Got it. I've added this task:
+       [E][ ] conference (from: 2019-10-15 23:00 to: 2019-10-17 01:00)
+     Now you have 1 tasks in the list.
+____________________________________________________________
+____________________________________________________________
+     Here are the tasks occurring on Oct 14 2019:
+     There are no tasks occurring on Oct 14 2019.
+____________________________________________________________
+____________________________________________________________
+     Here are the tasks occurring on Oct 15 2019:
+     1.[E][ ] conference (from: 2019-10-15 23:00 to: 2019-10-17 01:00)
+____________________________________________________________
+____________________________________________________________
+     Here are the tasks occurring on Oct 16 2019:
+     1.[E][ ] conference (from: 2019-10-15 23:00 to: 2019-10-17 01:00)
+____________________________________________________________
+____________________________________________________________
+     Here are the tasks occurring on Oct 17 2019:
+     1.[E][ ] conference (from: 2019-10-15 23:00 to: 2019-10-17 01:00)
+____________________________________________________________
+____________________________________________________________
+     Here are the tasks occurring on Oct 18 2019:
+     There are no tasks occurring on Oct 18 2019.
+____________________________________________________________
+____________________________________________________________
+     Bye. Hope to see you again soon!
+____________________________________________________________
+```
+
+### Expected Saved Tasks
+```text
+E | 0 | conference | 2019-10-15 23:00 | 2019-10-17 01:00
+```
+
 ## Test Case: Packaged end-to-end command, task-list, and storage workflow
 
 **Aim:** Verify that the packaged parser, task, UI, and storage classes work together to load, interpret, add, mark, delete, search, list, and save tasks in one session.
