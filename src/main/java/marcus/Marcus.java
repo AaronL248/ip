@@ -21,7 +21,7 @@ public class Marcus {
     /**
      * Creates Marcus with a task data file at the supplied path.
      *
-     * @param filePath path of the task data file
+     * @param filePath path of the task data file.
      */
     public Marcus(String filePath) {
         ui = new Ui();
@@ -110,10 +110,9 @@ public class Marcus {
     /**
      * Starts Marcus using its project-relative data file.
      *
-     * @param args command-line arguments, currently unused
+     * @param args command-line arguments, currently unused.
      */
     public static void main(String[] args) {
         new Marcus("data/results.txt").run();
     }
-
 }

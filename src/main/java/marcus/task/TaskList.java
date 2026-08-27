@@ -25,7 +25,7 @@ public class TaskList {
     /**
      * Creates a task list from an array whose populated entries appear first.
      *
-     * @param tasks tasks to store
+     * @param tasks tasks to store.
      */
     public TaskList(Task[] tasks) {
         this.tasks = tasks;
@@ -37,7 +37,7 @@ public class TaskList {
     /**
      * Reports whether this task list has reached its capacity.
      *
-     * @return whether this task list is full
+     * @return whether this task list is full.
      */
     public boolean isFull() {
         return size == tasks.length;
@@ -46,7 +46,7 @@ public class TaskList {
     /**
      * Returns the number of tasks currently stored.
      *
-     * @return number of tasks in this list
+     * @return number of tasks in this list.
      */
     public int size() {
         return size;
@@ -55,7 +55,7 @@ public class TaskList {
     /**
      * Adds a task to the end of the list.
      *
-     * @param task task to add
+     * @param task task to add.
      */
     public void add(Task task) {
         tasks[size] = task;
@@ -65,8 +65,8 @@ public class TaskList {
     /**
      * Returns the task at a one-based user-facing task number.
      *
-     * @param taskNumber one-based task number
-     * @return the matching task, or {@code null} when the number is invalid
+     * @param taskNumber one-based task number.
+     * @return the matching task, or {@code null} when the number is invalid.
      */
     public Task get(int taskNumber) {
         if (taskNumber < 1 || taskNumber > size) {
@@ -78,8 +78,8 @@ public class TaskList {
     /**
      * Removes the task at a one-based user-facing task number.
      *
-     * @param taskNumber one-based task number
-     * @return removed task, or {@code null} when the number is invalid
+     * @param taskNumber one-based task number.
+     * @return removed task, or {@code null} when the number is invalid.
      */
     public Task remove(int taskNumber) {
         Task removedTask = get(taskNumber);
@@ -97,7 +97,7 @@ public class TaskList {
     /**
      * Formats the current task list with its completion markers.
      *
-     * @return formatted task-list text
+     * @return formatted task-list text.
      */
     public String toDisplayString() {
         StringBuilder result = new StringBuilder(INDENT + "Here are the tasks in your list:\n");
@@ -110,8 +110,8 @@ public class TaskList {
     /**
      * Formats tasks that occur on a specified date, retaining their task-list numbers.
      *
-     * @param date date to match
-     * @return formatted matching tasks or a message when none match
+     * @param date date to match.
+     * @return formatted matching tasks or a message when none match.
      */
     public String tasksOnDateToString(LocalDate date) {
         StringBuilder result = new StringBuilder(INDENT + "Here are the tasks occurring on "
@@ -133,7 +133,7 @@ public class TaskList {
     /**
      * Returns all tasks in file format, one task per line.
      *
-     * @return serialized task list
+     * @return serialized task list.
      */
     public String toFileString() {
         StringBuilder savedTasks = new StringBuilder();

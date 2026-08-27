@@ -17,8 +17,8 @@ public class Deadline extends Task {
     /**
      * Creates an incomplete deadline task.
      *
-     * @param description description of the task
-     * @param by date by which the task should be completed
+     * @param description description of the task.
+     * @param by date by which the task should be completed.
      */
     public Deadline(String description, LocalDate by) {
         super(description);
@@ -28,8 +28,8 @@ public class Deadline extends Task {
     /**
      * Reports whether this deadline is due on the supplied date.
      *
-     * @param date date to check
-     * @return whether this task is due on {@code date}
+     * @param date date to check.
+     * @return whether this task is due on {@code date}.
      */
     @Override
     public boolean occursOn(LocalDate date) {
@@ -39,7 +39,7 @@ public class Deadline extends Task {
     /**
      * Returns this deadline in its user-facing display format.
      *
-     * @return deadline type, status, description, and formatted due date
+     * @return deadline type, status, description, and formatted due date.
      */
     @Override
     public String toString() {
@@ -49,7 +49,7 @@ public class Deadline extends Task {
     /**
      * Returns this deadline in the format used for persistence.
      *
-     * @return deadline type, completion state, description, and ISO date
+     * @return deadline type, completion state, description, and ISO date.
      */
     @Override
     public String toFileString() {

@@ -9,7 +9,7 @@ import java.time.LocalDate;
 import org.junit.jupiter.api.Test;
 
 /**
- * Tests the behaviour of {@link Deadline}.
+ * Tests the behavior of {@link Deadline}.
  */
 class DeadlineTest {
     /** Verifies that a new deadline displays its date and incomplete status. */

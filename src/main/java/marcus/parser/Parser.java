@@ -40,7 +40,7 @@ public class Parser {
         /**
          * Creates a command type associated with its command-line keyword.
          *
-         * @param keyword text that identifies the command
+         * @param keyword text that identifies the command.
          */
         CommandType(String keyword) {
             this.keyword = keyword;
@@ -54,8 +54,8 @@ public class Parser {
     /**
      * Classifies a user command while preserving commands without required arguments as invalid.
      *
-     * @param command user input
-     * @return the corresponding command type, or {@code UNKNOWN}
+     * @param command user input.
+     * @return the corresponding command type, or {@code UNKNOWN}.
      */
     public CommandType getCommandType(String command) {
         for (CommandType commandType : CommandType.values()) {
@@ -72,9 +72,9 @@ public class Parser {
     /**
      * Extracts the text after a command's keyword.
      *
-     * @param command user input beginning with the command keyword
-     * @param commandType type of the command
-     * @return command arguments, or an empty string when none are present
+     * @param command user input beginning with the command keyword.
+     * @param commandType type of the command.
+     * @return command arguments, or an empty string when none are present.
      */
     public String getArguments(String command, CommandType commandType) {
         return command.length() == commandType.keyword.length()
@@ -84,9 +84,9 @@ public class Parser {
     /**
      * Creates a task from a supported task-creation command.
      *
-     * @param command user command to interpret
-     * @param commandType parsed type of the command
-     * @return the new task, or {@code null} when the command is invalid
+     * @param command user command to interpret.
+     * @param commandType parsed type of the command.
+     * @return the new task, or {@code null} when the command is invalid.
      */
     public Task createTask(String command, CommandType commandType) {
         String arguments = getArguments(command, commandType);
@@ -122,9 +122,9 @@ public class Parser {
     /**
      * Returns a helpful message for an invalid command.
      *
-     * @param command invalid user command
-     * @param commandType parsed type of the command
-     * @return a command-specific error message
+     * @param command invalid user command.
+     * @param commandType parsed type of the command.
+     * @return a command-specific error message.
      */
     public String getErrorMessage(String command, CommandType commandType) {
         if (command.isBlank()) {
@@ -149,8 +149,8 @@ public class Parser {
     /**
      * Checks whether a task field can be displayed and saved safely.
      *
-     * @param value task field to validate
-     * @return whether the field is non-blank and does not contain the file delimiter
+     * @param value task field to validate.
+     * @return whether the field is non-blank and does not contain the file delimiter.
      */
     public static boolean isValidTaskPart(String value) {
         return !value.isBlank() && !value.contains("|");

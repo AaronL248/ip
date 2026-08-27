@@ -100,4 +100,3 @@ class EventTest {
                 event.toFileString());
     }
 }
-

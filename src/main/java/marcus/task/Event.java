@@ -23,9 +23,9 @@ public class Event extends Task {
     /**
      * Creates an incomplete event task.
      *
-     * @param description description of the event
-     * @param from event start time
-     * @param to event end time
+     * @param description description of the event.
+     * @param from event start time.
+     * @param to event end time.
      */
     public Event(String description, String from, String to) {
         super(description);
@@ -39,8 +39,8 @@ public class Event extends Task {
      * Reports whether this event includes the specified date.
      * Events entered with free-text dates cannot be matched by {@code find}.
      *
-     * @param date date to check
-     * @return whether the event has ISO date/times covering {@code date}
+     * @param date date to check.
+     * @return whether the event has ISO date/times covering {@code date}.
      */
     @Override
     public boolean occursOn(LocalDate date) {
@@ -52,8 +52,8 @@ public class Event extends Task {
     /**
      * Parses an ISO event timestamp into a {@link LocalDateTime}.
      *
-     * @param dateTimeText event time text in {@code yyyy-mm-dd HH:mm} format
-     * @return the parsed time, or {@code null} when the text is not in the ISO format
+     * @param dateTimeText event time text in {@code yyyy-mm-dd HH:mm} format.
+     * @return the parsed time, or {@code null} when the text is not in the ISO format.
      */
     private static LocalDateTime parseDateTime(String dateTimeText) {
         try {
@@ -66,7 +66,7 @@ public class Event extends Task {
     /**
      * Returns this event in its user-facing display format.
      *
-     * @return event type, status, description, start time, and end time
+     * @return event type, status, description, start time, and end time.
      */
     @Override
     public String toString() {
@@ -76,7 +76,7 @@ public class Event extends Task {
     /**
      * Returns this event in the format used for persistence.
      *
-     * @return event type, completion state, description, start time, and end time
+     * @return event type, completion state, description, start time, and end time.
      */
     @Override
     public String toFileString() {

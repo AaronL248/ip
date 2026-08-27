@@ -31,7 +31,7 @@ public class Ui {
     /**
      * Reports whether another command is available from the user.
      *
-     * @return whether another input line is available
+     * @return whether another input line is available.
      */
     public boolean hasNextCommand() {
         return scanner.hasNextLine();
@@ -40,7 +40,7 @@ public class Ui {
     /**
      * Reads and trims the next user command.
      *
-     * @return the user's command
+     * @return the user's command.
      */
     public String readCommand() {
         return scanner.nextLine().trim();
@@ -54,7 +54,7 @@ public class Ui {
     /**
      * Displays a response inside Marcus's divider border.
      *
-     * @param message response text; each line is indented for display
+     * @param message response text; each line is indented for display.
      */
     public void showMessage(String message) {
         System.out.println(DIVIDER);
@@ -67,7 +67,7 @@ public class Ui {
     /**
      * Displays an already formatted task list inside Marcus's divider border.
      *
-     * @param taskList formatted task-list text
+     * @param taskList formatted task-list text.
      */
     public void showTaskList(String taskList) {
         System.out.println(DIVIDER);
@@ -78,7 +78,7 @@ public class Ui {
     /**
      * Displays a message without adding dividers, for example while loading saved data.
      *
-     * @param message message to show
+     * @param message message to show.
      */
     public void showStartupMessage(String message) {
         System.out.println(INDENT + message);

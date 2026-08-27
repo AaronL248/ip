@@ -25,7 +25,7 @@ public class Storage {
     /**
      * Creates storage using a path relative to the program's working directory.
      *
-     * @param filePath path of the task data file
+     * @param filePath path of the task data file.
      */
     public Storage(String filePath) {
         saveFile = Path.of(filePath);
@@ -34,9 +34,9 @@ public class Storage {
     /**
      * Saves all current tasks to the data file.
      *
-     * @param tasks tasks to save
-     * @param ui user interface used to display save errors
-     * @return whether the save completed successfully
+     * @param tasks tasks to save.
+     * @param ui user interface used to display save errors.
+     * @return whether the save completed successfully.
      */
     public boolean save(TaskList tasks, Ui ui) {
         try {
@@ -55,8 +55,8 @@ public class Storage {
     /**
      * Loads saved tasks from the data file.
      *
-     * @param ui user interface used to display loading messages
-     * @return array containing the loaded tasks
+     * @param ui user interface used to display loading messages.
+     * @return array containing the loaded tasks.
      */
     public Task[] load(Ui ui) {
         Task[] tasks = new Task[TaskList.CAPACITY];
@@ -96,8 +96,8 @@ public class Storage {
     /**
      * Recreates one task from its pipe-delimited saved representation.
      *
-     * @param savedLine one line from the data file
-     * @return reconstructed task, or {@code null} when the record is invalid
+     * @param savedLine one line from the data file.
+     * @return reconstructed task, or {@code null} when the record is invalid.
      */
     private Task createTaskFromFile(String savedLine) {
         String[] parts = savedLine.split(" \\| ", -1);
