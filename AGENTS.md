@@ -37,6 +37,11 @@ and run the relevant Gradle tests and Javadoc or style tasks.
 
 ## Git
 
+For every future commit or commit-message recommendation, use the
+project-specific `seedu-git-standard` skill and follow the SE-EDU Git
+conventions. Apply the skill before creating, amending, or reviewing a commit,
+and use its branch-naming rules when creating or recommending branches.
+
 Use lightweight tags unless the user requests an annotated tag.
 When proposing or creating a commit message, include enough detail to explain the rationale for the change.
 Do not commit or push unless explicitly asked.
