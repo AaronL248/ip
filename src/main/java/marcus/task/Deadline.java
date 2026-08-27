@@ -36,11 +36,21 @@ public class Deadline extends Task {
         return by.equals(date);
     }
 
+    /**
+     * Returns this deadline in its user-facing display format.
+     *
+     * @return deadline type, status, description, and formatted due date
+     */
     @Override
     public String toString() {
         return "[D]" + super.toString() + " (by: " + by.format(DISPLAY_DATE_FORMAT) + ")";
     }
 
+    /**
+     * Returns this deadline in the format used for persistence.
+     *
+     * @return deadline type, completion state, description, and ISO date
+     */
     @Override
     public String toFileString() {
         return "D | " + (isDone ? "1" : "0") + " | " + description + " | " + by;

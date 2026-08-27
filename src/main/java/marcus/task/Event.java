@@ -63,11 +63,21 @@ public class Event extends Task {
         }
     }
 
+    /**
+     * Returns this event in its user-facing display format.
+     *
+     * @return event type, status, description, start time, and end time
+     */
     @Override
     public String toString() {
         return "[E]" + super.toString() + " (from: " + from + " to: " + to + ")";
     }
 
+    /**
+     * Returns this event in the format used for persistence.
+     *
+     * @return event type, completion state, description, start time, and end time
+     */
     @Override
     public String toFileString() {
         return "E | " + (isDone ? "1" : "0") + " | " + description + " | " + from + " | " + to;

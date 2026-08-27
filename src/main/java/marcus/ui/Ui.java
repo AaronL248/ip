@@ -28,7 +28,11 @@ public class Ui {
         System.out.println(DIVIDER);
     }
 
-    /** @return whether another command is available from the user */
+    /**
+     * Reports whether another command is available from the user.
+     *
+     * @return whether another input line is available
+     */
     public boolean hasNextCommand() {
         return scanner.hasNextLine();
     }

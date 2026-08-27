@@ -34,12 +34,20 @@ public class TaskList {
         }
     }
 
-    /** @return whether this task list has reached its capacity */
+    /**
+     * Reports whether this task list has reached its capacity.
+     *
+     * @return whether this task list is full
+     */
     public boolean isFull() {
         return size == tasks.length;
     }
 
-    /** @return number of tasks in this list */
+    /**
+     * Returns the number of tasks currently stored.
+     *
+     * @return number of tasks in this list
+     */
     public int size() {
         return size;
     }

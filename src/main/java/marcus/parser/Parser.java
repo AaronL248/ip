@@ -14,14 +14,41 @@ import marcus.task.Todo;
 public class Parser {
     /** Identifies the commands understood by Marcus. */
     public enum CommandType {
-        BYE("bye"), LIST("list"), FIND("find"), MARK("mark"), UNMARK("unmark"), DELETE("delete"),
-        TODO("todo"), DEADLINE("deadline"), EVENT("event"), UNKNOWN("");
+        /** Exits Marcus. */
+        BYE("bye"),
+        /** Lists all tasks. */
+        LIST("list"),
+        /** Finds dated tasks. */
+        FIND("find"),
+        /** Marks a task as completed. */
+        MARK("mark"),
+        /** Marks a task as incomplete. */
+        UNMARK("unmark"),
+        /** Deletes a task. */
+        DELETE("delete"),
+        /** Creates a to-do. */
+        TODO("todo"),
+        /** Creates a deadline. */
+        DEADLINE("deadline"),
+        /** Creates an event. */
+        EVENT("event"),
+        /** Represents unrecognized input. */
+        UNKNOWN("");
 
         private final String keyword;
 
+        /**
+         * Creates a command type associated with its command-line keyword.
+         *
+         * @param keyword text that identifies the command
+         */
         CommandType(String keyword) {
             this.keyword = keyword;
         }
+    }
+
+    /** Creates a parser for interpreting Marcus commands. */
+    public Parser() {
     }
 
     /**
