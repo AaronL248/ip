@@ -14,7 +14,7 @@ from pathlib import Path
 ROOT = Path.cwd()
 PLAN_PATH = ROOT / "test" / "ui-test-plan.md"
 SOURCE_DIR = ROOT / "src" / "main" / "java"
-MAIN_CLASS = "Marcus"
+MAIN_CLASS = "marcus.Marcus"
 SAVE_FILE = Path("data") / "results.txt"
 CASE_PATTERN = re.compile(
     r"^## Test Case: (?P<name>.+?)\n(?P<setup>.*?)^### Input\s*\n```text\n(?P<input>.*?)\n```"

@@ -1,3 +1,5 @@
+package marcus.ui;
+
 import java.util.Scanner;
 
 /**

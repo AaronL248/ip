@@ -2,7 +2,7 @@
 
 ## Test Case: Exit greeting
 
-**Aim:** Verify that the chatbot displays its initial prompt and exits politely when the user enters `bye`.
+**Aim:** Verify that the packaged `marcus.Marcus` entry point starts successfully, displays its initial prompt, and exits politely when the user enters `bye`.
 
 ### Input
 ```text
@@ -25,9 +25,9 @@ ____________________________________________________________
 ____________________________________________________________
 ```
 
-## Test Case: End-to-end command, task-list, and storage workflow
+## Test Case: Packaged end-to-end command, task-list, and storage workflow
 
-**Aim:** Verify that loaded tasks can be interpreted, added, marked, deleted, searched, listed, and saved correctly in one session after the OOP refactor.
+**Aim:** Verify that the packaged parser, task, UI, and storage classes work together to load, interpret, add, mark, delete, search, list, and save tasks in one session.
 
 ### Initial Saved Tasks
 ```text
@@ -446,7 +446,7 @@ ____________________________________________________________
 
 ## Test Case: Load saved tasks at startup
 
-**Aim:** Verify that a saved to-do, deadline, and event are restored with their completion status and timing details when Marcus starts.
+**Aim:** Verify that `marcus.storage.Storage` restores a saved to-do, deadline, and event with their completion status and timing details when Marcus starts.
 
 ### Initial Saved Tasks
 ```text
