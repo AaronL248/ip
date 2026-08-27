@@ -131,6 +131,27 @@ public class TaskList {
     }
 
     /**
+     * Formats tasks whose descriptions contain a keyword, retaining their task-list numbers.
+     *
+     * @param keyword keyword to match.
+     * @return formatted matching tasks or a message when none match.
+     */
+    public String tasksMatchingKeywordToString(String keyword) {
+        StringBuilder result = new StringBuilder(INDENT + "Here are the matching tasks in your list:\n");
+        boolean hasMatches = false;
+        for (int index = 0; index < size; index++) {
+            if (tasks[index].matchesKeyword(keyword)) {
+                result.append(INDENT).append(index + 1).append(".").append(tasks[index]).append("\n");
+                hasMatches = true;
+            }
+        }
+        if (!hasMatches) {
+            result.append(INDENT).append("There are no matching tasks in your list.\n");
+        }
+        return result.toString();
+    }
+
+    /**
      * Returns all tasks in file format, one task per line.
      *
      * @return serialized task list.

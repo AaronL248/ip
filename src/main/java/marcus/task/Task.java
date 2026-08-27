@@ -1,6 +1,7 @@
 package marcus.task;
 
 import java.time.LocalDate;
+import java.util.Locale;
 
 /**
  * Represents one task and whether it has been completed.
@@ -49,6 +50,16 @@ public class Task {
      */
     public boolean occursOn(LocalDate date) {
         return false;
+    }
+
+    /**
+     * Reports whether this task's description contains the supplied keyword.
+     *
+     * @param keyword keyword to search for.
+     * @return whether the description contains the keyword, ignoring case.
+     */
+    public boolean matchesKeyword(String keyword) {
+        return description.toLowerCase(Locale.ROOT).contains(keyword.toLowerCase(Locale.ROOT));
     }
 
     /**

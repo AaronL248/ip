@@ -728,12 +728,70 @@ ____________________________________________________________
      There are no tasks occurring on Feb 19 2019.
 ____________________________________________________________
 ____________________________________________________________
-     Please provide a date in yyyy-mm-dd format, eg. find 2019-10-15
+     Please provide a keyword or a date in yyyy-mm-dd format, eg. find book or find 2019-10-15
 ____________________________________________________________
 ____________________________________________________________
-     Please provide a date in yyyy-mm-dd format, eg. find 2019-10-15
+     Here are the matching tasks in your list:
+     There are no matching tasks in your list.
 ____________________________________________________________
 ____________________________________________________________
      Bye. Hope to see you again soon!
 ____________________________________________________________
+```
+
+## Test Case: Find tasks by description keyword
+
+**Aim:** Verify that `find <keyword>` searches task descriptions across all task types, matches partial text without case sensitivity, retains original list numbers, and reports when no tasks match.
+
+### Initial Saved Tasks
+```text
+T | 1 | read book
+D | 1 | return book | 2019-06-06
+E | 0 | book club meeting | Monday | Tuesday
+T | 0 | buy bread
+```
+
+### Input
+```text
+find BoOk
+find report
+find
+bye
+```
+
+### Expected Output
+```text
+ __  __    _    ____   ____ _   _ ____ 
+|  \/  |  / \  |  _ \ / ___| | | / ___|
+| |\/| | / _ \ | |_) | |   | | | \___ \
+| |  | |/ ___ \|  _ <| |___| |_| |___) |
+|_|  |_/_/   \_\_| \_\\____|\___/|____/
+
+Hello, I am Marcus the Chatbot!
+What can I do for you?
+____________________________________________________________
+____________________________________________________________
+     Here are the matching tasks in your list:
+     1.[T][X] read book
+     2.[D][X] return book (by: Jun 06 2019)
+     3.[E][ ] book club meeting (from: Monday to: Tuesday)
+____________________________________________________________
+____________________________________________________________
+     Here are the matching tasks in your list:
+     There are no matching tasks in your list.
+____________________________________________________________
+____________________________________________________________
+     Please provide a keyword or a date in yyyy-mm-dd format, eg. find book or find 2019-10-15
+____________________________________________________________
+____________________________________________________________
+     Bye. Hope to see you again soon!
+____________________________________________________________
+```
+
+### Expected Saved Tasks
+```text
+T | 1 | read book
+D | 1 | return book | 2019-06-06
+E | 0 | book club meeting | Monday | Tuesday
+T | 0 | buy bread
 ```
