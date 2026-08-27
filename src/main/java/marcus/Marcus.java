@@ -43,11 +43,17 @@ public class Marcus {
             } else if (commandType == Parser.CommandType.LIST) {
                 ui.showTaskList(tasks.toDisplayString());
             } else if (commandType == Parser.CommandType.FIND) {
+                String searchTerm = parser.getArguments(command, commandType);
                 try {
-                    LocalDate date = LocalDate.parse(parser.getArguments(command, commandType));
+                    LocalDate date = LocalDate.parse(searchTerm);
                     ui.showTaskList(tasks.tasksOnDateToString(date));
                 } catch (DateTimeParseException e) {
-                    ui.showMessage("Please provide a date in yyyy-mm-dd format, eg. find 2019-10-15");
+                    if (searchTerm.isBlank() || searchTerm.matches("\\d{4}-\\d{2}-\\d{2}")) {
+                        ui.showMessage("Please provide a keyword or a date in yyyy-mm-dd format, "
+                                + "eg. find book or find 2019-10-15");
+                    } else {
+                        ui.showTaskList(tasks.tasksMatchingKeywordToString(searchTerm));
+                    }
                 }
             } else if (commandType == Parser.CommandType.MARK) {
                 try {
