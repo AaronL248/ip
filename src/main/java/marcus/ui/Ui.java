@@ -2,10 +2,12 @@ package marcus.ui;
 
 import java.util.Scanner;
 
+import marcus.ResponseHandler;
+
 /**
  * Handles all console input and output for Marcus.
  */
-public class Ui {
+public class Ui implements ResponseHandler {
     private static final String DIVIDER = "____________________________________________________________";
     private static final String INDENT = "     ";
 
