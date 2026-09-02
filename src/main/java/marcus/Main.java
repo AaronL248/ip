@@ -12,7 +12,10 @@ import javafx.scene.control.TextField;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
+import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
+import javafx.scene.paint.Color;
+import javafx.scene.shape.Circle;
 import javafx.stage.Stage;
 
 /**
@@ -93,24 +96,33 @@ public class Main extends Application {
     }
 
     private void appendUserMessage(String message) {
-        appendMessage(message, USER_BUBBLE_STYLE, Pos.CENTER_RIGHT);
+        appendMessage(message, USER_BUBBLE_STYLE, Pos.CENTER_RIGHT, false);
     }
 
     private void appendMarcusMessage(String message) {
-        appendMessage(message, MARCUS_BUBBLE_STYLE, Pos.CENTER_LEFT);
+        appendMessage(message, MARCUS_BUBBLE_STYLE, Pos.BOTTOM_LEFT, true);
     }
 
-    private void appendMessage(String message, String bubbleStyle, Pos alignment) {
+    private void appendMessage(String message, String bubbleStyle, Pos alignment, boolean showAvatar) {
         Label bubble = new Label(message);
         bubble.setWrapText(true);
         bubble.setMaxWidth(440);
         bubble.setStyle(bubbleStyle);
 
-        HBox messageRow = new HBox(bubble);
+        HBox messageRow = showAvatar
+                ? new HBox(8, createMarcusAvatar(), bubble)
+                : new HBox(bubble);
         messageRow.setMaxWidth(Double.MAX_VALUE);
         messageRow.setAlignment(alignment);
         conversation.getChildren().add(messageRow);
         Platform.runLater(() -> conversationScroll.setVvalue(1.0));
+    }
+
+    private StackPane createMarcusAvatar() {
+        Circle avatarBackground = new Circle(18, Color.web("#5B6EE1"));
+        Label robotIcon = new Label("🤖");
+        robotIcon.setStyle("-fx-font-size: 16px;");
+        return new StackPane(avatarBackground, robotIcon);
     }
 
     private class GuiResponseHandler implements ResponseHandler {
