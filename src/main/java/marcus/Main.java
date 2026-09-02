@@ -96,22 +96,25 @@ public class Main extends Application {
     }
 
     private void appendUserMessage(String message) {
-        appendMessage(message, USER_BUBBLE_STYLE, Pos.CENTER_RIGHT, false);
+        appendMessage(message, USER_BUBBLE_STYLE, Pos.BOTTOM_RIGHT, false, true);
     }
 
     private void appendMarcusMessage(String message) {
-        appendMessage(message, MARCUS_BUBBLE_STYLE, Pos.BOTTOM_LEFT, true);
+        appendMessage(message, MARCUS_BUBBLE_STYLE, Pos.BOTTOM_LEFT, true, false);
     }
 
-    private void appendMessage(String message, String bubbleStyle, Pos alignment, boolean showAvatar) {
+    private void appendMessage(String message, String bubbleStyle, Pos alignment,
+            boolean showMarcusAvatar, boolean showUserAvatar) {
         Label bubble = new Label(message);
         bubble.setWrapText(true);
         bubble.setMaxWidth(440);
         bubble.setStyle(bubbleStyle);
 
-        HBox messageRow = showAvatar
+        HBox messageRow = showMarcusAvatar
                 ? new HBox(8, createMarcusAvatar(), bubble)
-                : new HBox(bubble);
+                : showUserAvatar
+                        ? new HBox(8, bubble, createUserAvatar())
+                        : new HBox(bubble);
         messageRow.setMaxWidth(Double.MAX_VALUE);
         messageRow.setAlignment(alignment);
         conversation.getChildren().add(messageRow);
@@ -123,6 +126,13 @@ public class Main extends Application {
         Label robotIcon = new Label("🤖");
         robotIcon.setStyle("-fx-font-size: 16px;");
         return new StackPane(avatarBackground, robotIcon);
+    }
+
+    private StackPane createUserAvatar() {
+        Circle avatarBackground = new Circle(18, Color.web("#8B5CF6"));
+        Label userIcon = new Label("🙂");
+        userIcon.setStyle("-fx-font-size: 16px;");
+        return new StackPane(avatarBackground, userIcon);
     }
 
     private class GuiResponseHandler implements ResponseHandler {
