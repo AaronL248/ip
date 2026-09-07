@@ -1,7 +1,10 @@
 package marcus.task;
 
 import java.time.LocalDate;
+import java.util.Collections;
+import java.util.LinkedHashSet;
 import java.util.Locale;
+import java.util.Set;
 
 /**
  * Represents one task and whether it has been completed.
@@ -11,6 +14,7 @@ public class Task {
     protected String description;
     /** Whether this task has been completed. */
     protected boolean isDone;
+    private final Set<String> tags = new LinkedHashSet<>();
 
     /**
      * Creates an incomplete task with the given description.
@@ -42,6 +46,68 @@ public class Task {
     }
 
     /**
+     * Adds a tag to this task after normalizing it to lowercase.
+     *
+     * @param tag tag to add.
+     * @return whether the tag was not already present.
+     */
+    public boolean addTag(String tag) {
+        return tags.add(tag.toLowerCase(Locale.ROOT));
+    }
+
+    /**
+     * Removes one tag from this task.
+     *
+     * @param tag tag to remove.
+     * @return whether the tag was present.
+     */
+    public boolean removeTag(String tag) {
+        return tags.remove(tag.toLowerCase(Locale.ROOT));
+    }
+
+    /** Removes all tags from this task. */
+    public void removeAllTags() {
+        tags.clear();
+    }
+
+    /**
+     * Reports whether this task has the supplied tag.
+     *
+     * @param tag tag to search for.
+     * @return whether this task has the tag.
+     */
+    public boolean hasTag(String tag) {
+        return tags.contains(tag.toLowerCase(Locale.ROOT));
+    }
+
+    /**
+     * Returns this task's tags in display order.
+     *
+     * @return an unmodifiable view of the task's tags.
+     */
+    public Set<String> getTags() {
+        return Collections.unmodifiableSet(tags);
+    }
+
+    /**
+     * Returns this task's tags separated by spaces.
+     *
+     * @return the task's tags, or an empty string when it has none.
+     */
+    public String getTagsString() {
+        return String.join(" ", tags);
+    }
+
+    /**
+     * Returns the optional tag field used for persistence.
+     *
+     * @return a storage delimiter and tags, or an empty string when there are no tags.
+     */
+    protected String getTagsFileSuffix() {
+        return tags.isEmpty() ? "" : " | " + getTagsString();
+    }
+
+    /**
      * Reports whether this task occurs on a particular date.
      * Tasks without a date, such as to-dos, do not occur on any date.
      *
@@ -68,7 +134,7 @@ public class Task {
      * @return task type, completion state, and description separated by pipes.
      */
     public String toFileString() {
-        return "T | " + (isDone ? "1" : "0") + " | " + description;
+        return "T | " + (isDone ? "1" : "0") + " | " + description + getTagsFileSuffix();
     }
 
     /**
@@ -78,6 +144,16 @@ public class Task {
      */
     @Override
     public String toString() {
+        String tagSuffix = tags.isEmpty() ? "" : " " + getTagsString();
+        return "[" + getStatusIcon() + "] " + description + tagSuffix;
+    }
+
+    /**
+     * Returns this task's display format without its tags.
+     *
+     * @return status icon followed by the task description.
+     */
+    public String toStringWithoutTags() {
         return "[" + getStatusIcon() + "] " + description;
     }
 }

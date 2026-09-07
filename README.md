@@ -23,3 +23,18 @@ Prerequisites: JDK 25, update Intellij to the most recent version.
    ```
 
 **Warning:** Keep the `src\main\java` folder as the root folder for Java files (i.e., don't rename those folders or move Java files to another folder outside of this folder path), as this is the default location some tools (e.g., Gradle) expect to find Java files.
+
+## Tagging tasks
+
+Tasks can have one or more tags. Tags start with `#`, cannot contain spaces,
+and are stored in lowercase.
+
+```text
+tag 1 #fun #weekend
+untag 1 #fun
+untag 1 all
+```
+
+Tags are shown after the task description. Use `find #tag` or `list #tag` to
+search for tasks with a tag. A normal `find keyword` command searches task
+descriptions only.

@@ -106,25 +106,51 @@ public class Storage {
         }
 
         Task task;
-        if (parts[0].equals("T") && parts.length == 3 && Parser.isValidTaskPart(parts[2])) {
+        int tagIndex = -1;
+        if (parts[0].equals("T") && (parts.length == 3 || parts.length == 4)
+                && Parser.isValidTaskPart(parts[2])) {
             task = new Todo(parts[2]);
-        } else if (parts[0].equals("D") && parts.length == 4
+            tagIndex = parts.length == 4 ? 3 : -1;
+        } else if (parts[0].equals("D") && (parts.length == 4 || parts.length == 5)
                 && Parser.isValidTaskPart(parts[2]) && Parser.isValidTaskPart(parts[3])) {
             try {
                 task = new Deadline(parts[2], LocalDate.parse(parts[3]));
             } catch (DateTimeParseException e) {
                 return null;
             }
-        } else if (parts[0].equals("E") && parts.length == 5
+            tagIndex = parts.length == 5 ? 4 : -1;
+        } else if (parts[0].equals("E") && (parts.length == 5 || parts.length == 6)
                 && Parser.isValidTaskPart(parts[2]) && Parser.isValidTaskPart(parts[3])
                 && Parser.isValidTaskPart(parts[4])) {
             task = new Event(parts[2], parts[3], parts[4]);
+            tagIndex = parts.length == 6 ? 5 : -1;
         } else {
+            return null;
+        }
+        if (tagIndex >= 0 && !addTagsFromFile(task, parts[tagIndex])) {
             return null;
         }
         if (parts[1].equals("1")) {
             task.markAsDone();
         }
         return task;
+    }
+
+    /**
+     * Adds tags from the optional storage field after validating each tag.
+     *
+     * @param task task receiving the tags.
+     * @param tagsText space-separated tags from the storage file.
+     * @return whether every stored tag is valid.
+     */
+    private boolean addTagsFromFile(Task task, String tagsText) {
+        String[] tags = tagsText.split("\\s+");
+        for (String tag : tags) {
+            if (!Parser.isValidTag(tag)) {
+                return false;
+            }
+            task.addTag(tag);
+        }
+        return true;
     }
 }

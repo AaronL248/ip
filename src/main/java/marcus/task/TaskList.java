@@ -119,7 +119,7 @@ public class TaskList {
     public String tasksOnDateToString(LocalDate date) {
         String formattedDate = date.format(DISPLAY_DATE_FORMAT);
         return formatNumberedTasks("Here are the tasks occurring on " + formattedDate + ":",
-                task -> task.occursOn(date), "There are no tasks occurring on " + formattedDate + ".");
+                task -> task.occursOn(date), "There are no tasks occurring on " + formattedDate + ".", false);
     }
 
     /**
@@ -130,7 +130,18 @@ public class TaskList {
      */
     public String tasksMatchingKeywordToString(String keyword) {
         return formatNumberedTasks("Here are the matching tasks in your list:",
-                task -> task.matchesKeyword(keyword), "There are no matching tasks in your list.");
+                task -> task.matchesKeyword(keyword), "There are no matching tasks in your list.", false);
+    }
+
+    /**
+     * Formats tasks that have a specified tag, retaining their task-list numbers.
+     *
+     * @param tag tag to match.
+     * @return formatted matching tasks or a message when none match.
+     */
+    public String tasksMatchingTagToString(String tag) {
+        return formatNumberedTasks("Here are the tasks tagged " + tag + ":",
+                task -> task.hasTag(tag), "There are no tasks tagged " + tag + ".", true);
     }
 
     /**
@@ -153,10 +164,12 @@ public class TaskList {
      * @param emptyMessage message shown when no tasks match.
      * @return formatted task-list text.
      */
-    private String formatNumberedTasks(String heading, Predicate<Task> condition, String emptyMessage) {
+    private String formatNumberedTasks(String heading, Predicate<Task> condition, String emptyMessage,
+            boolean showTags) {
         String matchingTasks = IntStream.range(0, size)
                 .filter(index -> condition.test(tasks[index]))
-                .mapToObj(index -> INDENT + (index + 1) + "." + tasks[index])
+                .mapToObj(index -> INDENT + (index + 1) + "."
+                        + (showTags ? tasks[index] : tasks[index].toStringWithoutTags()))
                 .collect(Collectors.joining("\n"));
         String taskContent = matchingTasks.isEmpty() ? INDENT + emptyMessage : matchingTasks;
         return INDENT + heading + "\n" + taskContent + "\n";
