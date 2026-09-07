@@ -77,6 +77,8 @@ public class Parser {
      * @return command arguments, or an empty string when none are present.
      */
     public String getArguments(String command, CommandType commandType) {
+        assert commandType != null && commandType != CommandType.UNKNOWN
+                : "Arguments require a recognized command type";
         return command.length() == commandType.keyword.length()
                 ? "" : command.substring(commandType.keyword.length() + 1);
     }
@@ -89,6 +91,10 @@ public class Parser {
      * @return the new task, or {@code null} when the command is invalid.
      */
     public Task createTask(String command, CommandType commandType) {
+        assert commandType != null : "A command must have a command type";
+        if (commandType == CommandType.UNKNOWN) {
+            return null;
+        }
         String arguments = getArguments(command, commandType);
         if (commandType == CommandType.TODO && isValidTaskPart(arguments)) {
             return new Todo(arguments);
