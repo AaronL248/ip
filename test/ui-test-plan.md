@@ -876,3 +876,60 @@ ____________________________________________________________
 ```text
 T | 0 | watch a movie
 ```
+
+## Test Case: Load tagged tasks across task types
+
+**Aim:** Verify that tagged to-dos, deadlines, and events load from storage,
+retain their tags in normal lists, and can be found with tag searches.
+
+### Initial Saved Tasks
+```text
+T | 0 | watch a movie | #fun #weekend
+D | 1 | submit report | 2026-09-15 | #school
+E | 0 | team meeting | Monday | Tuesday | #work
+```
+
+### Input
+```text
+list
+find #school
+list #work
+bye
+```
+
+### Expected Output
+```text
+ __  __    _    ____   ____ _   _ ____ 
+|  \/  |  / \  |  _ \ / ___| | | / ___|
+| |\/| | / _ \ | |_) | |   | | | \___ \
+| |  | |/ ___ \|  _ <| |___| |_| |___) |
+|_|  |_/_/   \_\_| \_\\____|\___/|____/
+
+Hello, I am Marcus the Chatbot!
+What can I do for you?
+____________________________________________________________
+____________________________________________________________
+     Here are the tasks in your list:
+     1.[T][ ] watch a movie #fun #weekend
+     2.[D][X] submit report #school (by: Sep 15 2026)
+     3.[E][ ] team meeting #work (from: Monday to: Tuesday)
+____________________________________________________________
+____________________________________________________________
+     Here are the tasks tagged #school:
+     2.[D][X] submit report #school (by: Sep 15 2026)
+____________________________________________________________
+____________________________________________________________
+     Here are the tasks tagged #work:
+     3.[E][ ] team meeting #work (from: Monday to: Tuesday)
+____________________________________________________________
+____________________________________________________________
+     Bye. Hope to see you again soon!
+____________________________________________________________
+```
+
+### Expected Saved Tasks
+```text
+T | 0 | watch a movie | #fun #weekend
+D | 1 | submit report | 2026-09-15 | #school
+E | 0 | team meeting | Monday | Tuesday | #work
+```
