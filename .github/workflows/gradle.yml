@@ -27,4 +27,10 @@ jobs:
           java-package: jdk+fx
 
       - name: Build and check with Gradle
-        run: ./gradlew check
+        shell: pwsh
+        run: |
+          if ($env:RUNNER_OS -eq "Windows") {
+            .\gradlew.bat check
+          } else {
+            ./gradlew check
+          }
