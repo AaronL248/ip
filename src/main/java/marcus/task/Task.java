@@ -15,7 +15,7 @@ public class Task {
     /**
      * Creates an incomplete task with the given description.
      *
-    * @param description description of the task.
+     * @param description description of the task.
      */
     public Task(String description) {
         assert description != null : "A task must have a description";

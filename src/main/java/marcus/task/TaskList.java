@@ -25,7 +25,7 @@ public class TaskList {
     /**
      * Creates a task list from an array whose populated entries appear first.
      *
-    * @param tasks tasks to store.
+     * @param tasks tasks to store.
      */
     public TaskList(Task[] tasks) {
         assert tasks != null : "Task storage must not be null";
@@ -59,7 +59,7 @@ public class TaskList {
     /**
      * Adds a task to the end of the list.
      *
-    * @param task task to add.
+     * @param task task to add.
      */
     public void add(Task task) {
         assert !isFull() : "Cannot add a task to a full task list";
