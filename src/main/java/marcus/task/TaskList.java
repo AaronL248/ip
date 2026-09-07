@@ -3,6 +3,9 @@ package marcus.task;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.Locale;
+import java.util.function.Predicate;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 /**
  * Stores Marcus's tasks and provides task-list operations.
@@ -106,11 +109,11 @@ public class TaskList {
      * @return formatted task-list text.
      */
     public String toDisplayString() {
-        StringBuilder result = new StringBuilder(INDENT + "Here are the tasks in your list:\n");
-        for (int index = 0; index < size; index++) {
-            result.append(INDENT).append(index + 1).append(".").append(tasks[index]).append("\n");
-        }
-        return result.toString();
+        String numberedTasks = IntStream.range(0, size)
+                .mapToObj(index -> INDENT + (index + 1) + "." + tasks[index])
+                .collect(Collectors.joining("\n"));
+        return INDENT + "Here are the tasks in your list:\n"
+                + (numberedTasks.isEmpty() ? "" : numberedTasks + "\n");
     }
 
     /**
@@ -120,20 +123,9 @@ public class TaskList {
      * @return formatted matching tasks or a message when none match.
      */
     public String tasksOnDateToString(LocalDate date) {
-        StringBuilder result = new StringBuilder(INDENT + "Here are the tasks occurring on "
-                + date.format(DISPLAY_DATE_FORMAT) + ":\n");
-        boolean hasMatches = false;
-        for (int index = 0; index < size; index++) {
-            if (tasks[index].occursOn(date)) {
-                result.append(INDENT).append(index + 1).append(".").append(tasks[index]).append("\n");
-                hasMatches = true;
-            }
-        }
-        if (!hasMatches) {
-            result.append(INDENT).append("There are no tasks occurring on ")
-                    .append(date.format(DISPLAY_DATE_FORMAT)).append(".\n");
-        }
-        return result.toString();
+        String formattedDate = date.format(DISPLAY_DATE_FORMAT);
+        return formatNumberedTasks("Here are the tasks occurring on " + formattedDate + ":",
+                task -> task.occursOn(date), "There are no tasks occurring on " + formattedDate + ".", false);
     }
 
     /**
@@ -143,18 +135,19 @@ public class TaskList {
      * @return formatted matching tasks or a message when none match.
      */
     public String tasksMatchingKeywordToString(String keyword) {
-        StringBuilder result = new StringBuilder(INDENT + "Here are the matching tasks in your list:\n");
-        boolean hasMatches = false;
-        for (int index = 0; index < size; index++) {
-            if (tasks[index].matchesKeyword(keyword)) {
-                result.append(INDENT).append(index + 1).append(".").append(tasks[index]).append("\n");
-                hasMatches = true;
-            }
-        }
-        if (!hasMatches) {
-            result.append(INDENT).append("There are no matching tasks in your list.\n");
-        }
-        return result.toString();
+        return formatNumberedTasks("Here are the matching tasks in your list:",
+                task -> task.matchesKeyword(keyword), "There are no matching tasks in your list.", false);
+    }
+
+    /**
+     * Formats tasks that have a specified tag, retaining their task-list numbers.
+     *
+     * @param tag tag to match.
+     * @return formatted matching tasks or a message when none match.
+     */
+    public String tasksMatchingTagToString(String tag) {
+        return formatNumberedTasks("Here are the tasks tagged " + tag + ":",
+                task -> task.hasTag(tag), "There are no tasks tagged " + tag + ".", true);
     }
 
     /**
@@ -163,10 +156,28 @@ public class TaskList {
      * @return serialized task list.
      */
     public String toFileString() {
-        StringBuilder savedTasks = new StringBuilder();
-        for (int index = 0; index < size; index++) {
-            savedTasks.append(tasks[index].toFileString()).append(System.lineSeparator());
-        }
-        return savedTasks.toString();
+        String savedTasks = IntStream.range(0, size)
+                .mapToObj(index -> tasks[index].toFileString())
+                .collect(Collectors.joining(System.lineSeparator()));
+        return savedTasks.isEmpty() ? "" : savedTasks + System.lineSeparator();
+    }
+
+    /**
+     * Formats numbered tasks selected by the supplied condition.
+     *
+     * @param heading heading shown before the matching tasks.
+     * @param condition condition used to select tasks.
+     * @param emptyMessage message shown when no tasks match.
+     * @return formatted task-list text.
+     */
+    private String formatNumberedTasks(String heading, Predicate<Task> condition, String emptyMessage,
+            boolean showTags) {
+        String matchingTasks = IntStream.range(0, size)
+                .filter(index -> condition.test(tasks[index]))
+                .mapToObj(index -> INDENT + (index + 1) + "."
+                        + (showTags ? tasks[index] : tasks[index].toStringWithoutTags()))
+                .collect(Collectors.joining("\n"));
+        String taskContent = matchingTasks.isEmpty() ? INDENT + emptyMessage : matchingTasks;
+        return INDENT + heading + "\n" + taskContent + "\n";
     }
 }

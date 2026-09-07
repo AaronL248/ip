@@ -2,6 +2,8 @@ package marcus;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeParseException;
+import java.util.Locale;
+import java.util.StringJoiner;
 
 import marcus.parser.Parser;
 import marcus.storage.Storage;
@@ -61,7 +63,7 @@ public class Marcus {
             return false;
         }
         if (commandType == Parser.CommandType.LIST) {
-            responseHandler.showTaskList(tasks.toDisplayString());
+            processList(command, commandType, responseHandler);
         } else if (commandType == Parser.CommandType.FIND) {
             processFind(command, commandType, responseHandler);
         } else if (commandType == Parser.CommandType.MARK) {
@@ -70,6 +72,10 @@ public class Marcus {
             processUnmark(command, commandType, responseHandler);
         } else if (commandType == Parser.CommandType.DELETE) {
             processDelete(command, commandType, responseHandler);
+        } else if (commandType == Parser.CommandType.TAG) {
+            processTag(command, commandType, responseHandler);
+        } else if (commandType == Parser.CommandType.UNTAG) {
+            processUntag(command, commandType, responseHandler);
         } else {
             processCreate(command, commandType, responseHandler);
         }
@@ -78,6 +84,15 @@ public class Marcus {
 
     private void processFind(String command, Parser.CommandType commandType, ResponseHandler responseHandler) {
         String searchTerm = parser.getArguments(command, commandType);
+        if (searchTerm.startsWith("#")) {
+            if (Parser.isValidTag(searchTerm)) {
+                String normalizedTag = searchTerm.toLowerCase(Locale.ROOT);
+                responseHandler.showTaskList(tasks.tasksMatchingTagToString(normalizedTag));
+            } else {
+                responseHandler.showMessage("Tag invalid, please try another tag");
+            }
+            return;
+        }
         try {
             LocalDate date = LocalDate.parse(searchTerm);
             responseHandler.showTaskList(tasks.tasksOnDateToString(date));
@@ -88,6 +103,84 @@ public class Marcus {
             } else {
                 responseHandler.showTaskList(tasks.tasksMatchingKeywordToString(searchTerm));
             }
+        }
+    }
+
+    private void processList(String command, Parser.CommandType commandType,
+            ResponseHandler responseHandler) {
+        String tag = parser.getArguments(command, commandType);
+        if (tag.isEmpty()) {
+            responseHandler.showTaskList(tasks.toDisplayString());
+        } else if (Parser.isValidTag(tag)) {
+            responseHandler.showTaskList(tasks.tasksMatchingTagToString(tag.toLowerCase(Locale.ROOT)));
+        } else {
+            responseHandler.showMessage("Tag invalid, please try another tag");
+        }
+    }
+
+    private void processTag(String command, Parser.CommandType commandType, ResponseHandler responseHandler) {
+        String[] parts = parser.getArguments(command, commandType).split("\\s+");
+        if (parts.length < 2) {
+            responseHandler.showMessage("Tag invalid, please try another tag");
+            return;
+        }
+        try {
+            int taskNumber = Integer.parseInt(parts[0]);
+            Task task = tasks.get(taskNumber);
+            if (task == null) {
+                responseHandler.showMessage("That task number does not exist.");
+                return;
+            }
+            for (int index = 1; index < parts.length; index++) {
+                parts[index] = parts[index].toLowerCase(Locale.ROOT);
+                if (!Parser.isValidTag(parts[index])) {
+                    responseHandler.showMessage("Tag invalid, please try another tag");
+                    return;
+                }
+            }
+            StringJoiner addedTags = new StringJoiner(" ");
+            for (int index = 1; index < parts.length; index++) {
+                if (task.addTag(parts[index])) {
+                    addedTags.add(parts[index]);
+                }
+            }
+            storage.save(tasks, ui);
+            if (addedTags.length() == 0) {
+                responseHandler.showMessage("No new tags were added to:\n  " + task);
+                return;
+            }
+            String tagLabel = addedTags.toString().contains(" ") ? "Added tags " : "Added tag ";
+            responseHandler.showMessage(tagLabel + addedTags + " to:\n  " + task);
+        } catch (NumberFormatException e) {
+            responseHandler.showMessage("Please provide a task number to tag.");
+        }
+    }
+
+    private void processUntag(String command, Parser.CommandType commandType,
+            ResponseHandler responseHandler) {
+        String[] parts = parser.getArguments(command, commandType).split("\\s+");
+        if (parts.length != 2 || (!parts[1].equals("all") && !Parser.isValidTag(parts[1]))) {
+            responseHandler.showMessage("Tag invalid, please try another tag");
+            return;
+        }
+        try {
+            int taskNumber = Integer.parseInt(parts[0]);
+            Task task = tasks.get(taskNumber);
+            if (task == null) {
+                responseHandler.showMessage("That task number does not exist.");
+                return;
+            }
+            if (parts[1].equals("all")) {
+                task.removeAllTags();
+                responseHandler.showMessage("Removed all tags from:\n  " + task);
+            } else {
+                String normalizedTag = parts[1].toLowerCase(Locale.ROOT);
+                task.removeTag(normalizedTag);
+                responseHandler.showMessage("Removed tag " + normalizedTag + " from:\n  " + task);
+            }
+            storage.save(tasks, ui);
+        } catch (NumberFormatException e) {
+            responseHandler.showMessage("Please provide a task number to untag.");
         }
     }
 

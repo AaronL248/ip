@@ -1,6 +1,6 @@
 # Marcus User Guide
 
-// Update the title above to match the actual product name
+Marcus is a task manager that supports to-dos, deadlines, events, and tags.
 
 // Product screenshot goes here
 
@@ -14,17 +14,33 @@
 
 Example: `keyword (optional arguments)`
 
-// A description of the expected outcome goes here
+Use `deadline <description> /by <yyyy-mm-dd>` to add a deadline.
 
 ```
 expected output
 ```
 
-## Feature ABC
+## Tagging tasks
 
-// Feature details
+Use `tag <task number> <tag>...` to add one or more tags to a task.
 
+```text
+tag 1 #fun #weekend
+```
 
-## Feature XYZ
+Tags must begin with `#`, cannot contain spaces, and are stored in lowercase.
+Duplicate tags are not added. A successful command displays the updated task.
 
-// Feature details
+Use `untag <task number> <tag>` to remove one tag, or `untag <task number> all`
+to remove every tag.
+
+```text
+untag 1 #fun
+untag 1 all
+```
+
+Tags are displayed after the task description and are saved separately from
+the description. Existing saved tasks without tags continue to load normally.
+
+Use `find #fun` to search by tag, or `list #fun` to list tasks with that tag.
+Normal keyword searches do not search tags.

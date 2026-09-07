@@ -73,6 +73,11 @@ public class Event extends Task {
         return "[E]" + super.toString() + " (from: " + from + " to: " + to + ")";
     }
 
+    @Override
+    public String toStringWithoutTags() {
+        return "[E]" + super.toStringWithoutTags() + " (from: " + from + " to: " + to + ")";
+    }
+
     /**
      * Returns this event in the format used for persistence.
      *
@@ -80,6 +85,7 @@ public class Event extends Task {
      */
     @Override
     public String toFileString() {
-        return "E | " + (isDone ? "1" : "0") + " | " + description + " | " + from + " | " + to;
+        return "E | " + (isDone ? "1" : "0") + " | " + description + " | " + from + " | " + to
+                + getTagsFileSuffix();
     }
 }

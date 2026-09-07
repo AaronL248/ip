@@ -26,6 +26,10 @@ public class Parser {
         UNMARK("unmark"),
         /** Deletes a task. */
         DELETE("delete"),
+        /** Adds tags to a task. */
+        TAG("tag"),
+        /** Removes tags from a task. */
+        UNTAG("untag"),
         /** Creates a to-do. */
         TODO("todo"),
         /** Creates a deadline. */
@@ -160,5 +164,15 @@ public class Parser {
      */
     public static boolean isValidTaskPart(String value) {
         return !value.isBlank() && !value.contains("|");
+    }
+
+    /**
+     * Checks whether a tag has the required format.
+     *
+     * @param tag tag to validate.
+     * @return whether the tag starts with {@code #} and contains only permitted characters.
+     */
+    public static boolean isValidTag(String tag) {
+        return tag.matches("#[A-Za-z0-9_-]+");
     }
 }

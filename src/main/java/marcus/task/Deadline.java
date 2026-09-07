@@ -46,6 +46,11 @@ public class Deadline extends Task {
         return "[D]" + super.toString() + " (by: " + by.format(DISPLAY_DATE_FORMAT) + ")";
     }
 
+    @Override
+    public String toStringWithoutTags() {
+        return "[D]" + super.toStringWithoutTags() + " (by: " + by.format(DISPLAY_DATE_FORMAT) + ")";
+    }
+
     /**
      * Returns this deadline in the format used for persistence.
      *
@@ -53,6 +58,7 @@ public class Deadline extends Task {
      */
     @Override
     public String toFileString() {
-        return "D | " + (isDone ? "1" : "0") + " | " + description + " | " + by;
+        return "D | " + (isDone ? "1" : "0") + " | " + description + " | " + by
+                + getTagsFileSuffix();
     }
 }
