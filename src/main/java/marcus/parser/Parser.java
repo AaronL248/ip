@@ -100,33 +100,59 @@ public class Parser {
             return null;
         }
         String arguments = getArguments(command, commandType);
-        if (commandType == CommandType.TODO && isValidTaskPart(arguments)) {
-            return new Todo(arguments);
-        }
+        return switch (commandType) {
+            case TODO -> createTodo(arguments);
+            case DEADLINE -> createDeadline(arguments);
+            case EVENT -> createEvent(arguments);
+            default -> null;
+        };
+    }
 
-        if (commandType == CommandType.DEADLINE) {
-            String[] parts = arguments.split(" /by ", 2);
-            if (parts.length == 2 && isValidTaskPart(parts[0]) && isValidTaskPart(parts[1])) {
-                try {
-                    return new Deadline(parts[0], LocalDate.parse(parts[1]));
-                } catch (DateTimeParseException e) {
-                    return null;
-                }
-            }
-        }
+    /**
+     * Creates a to-do from its command arguments.
+     *
+     * @param arguments task description.
+     * @return the new to-do, or {@code null} when the description is invalid.
+     */
+    private Task createTodo(String arguments) {
+        return isValidTaskPart(arguments) ? new Todo(arguments) : null;
+    }
 
-        if (commandType == CommandType.EVENT) {
-            String[] descriptionAndFrom = arguments.split(" /from ", 2);
-            if (descriptionAndFrom.length == 2) {
-                String[] fromAndTo = descriptionAndFrom[1].split(" /to ", 2);
-                if (fromAndTo.length == 2 && isValidTaskPart(descriptionAndFrom[0])
-                        && isValidTaskPart(fromAndTo[0]) && isValidTaskPart(fromAndTo[1])) {
-                    return new Event(descriptionAndFrom[0], fromAndTo[0], fromAndTo[1]);
-                }
-            }
+    /**
+     * Creates a deadline from its command arguments.
+     *
+     * @param arguments deadline description and date.
+     * @return the new deadline, or {@code null} when the arguments are invalid.
+     */
+    private Task createDeadline(String arguments) {
+        String[] parts = arguments.split(" /by ", 2);
+        if (parts.length != 2 || !isValidTaskPart(parts[0]) || !isValidTaskPart(parts[1])) {
+            return null;
         }
+        try {
+            return new Deadline(parts[0], LocalDate.parse(parts[1]));
+        } catch (DateTimeParseException e) {
+            return null;
+        }
+    }
 
-        return null;
+    /**
+     * Creates an event from its command arguments.
+     *
+     * @param arguments event description, start time, and end time.
+     * @return the new event, or {@code null} when the arguments are invalid.
+     */
+    private Task createEvent(String arguments) {
+        String[] descriptionAndFrom = arguments.split(" /from ", 2);
+        if (descriptionAndFrom.length != 2) {
+            return null;
+        }
+        String[] fromAndTo = descriptionAndFrom[1].split(" /to ", 2);
+        if (fromAndTo.length != 2 || !isValidTaskPart(descriptionAndFrom[0])
+                || !isValidTaskPart(fromAndTo[0]) || !isValidTaskPart(fromAndTo[1])) {
+            return null;
+        }
+        return new Event(descriptionAndFrom[0], fromAndTo[0], fromAndTo[1]);
     }
 
     /**
