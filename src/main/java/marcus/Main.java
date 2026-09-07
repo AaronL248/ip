@@ -23,6 +23,14 @@ import javafx.stage.Stage;
  */
 public class Main extends Application {
     private static final String DEFAULT_FILE_PATH = "data/results.txt";
+    private static final int CONVERSATION_GAP = 8;
+    private static final int COMMAND_BAR_GAP = 10;
+    private static final int CONTENT_PADDING = 16;
+    private static final int MESSAGE_PADDING = 12;
+    private static final int MESSAGE_MAX_WIDTH = 440;
+    private static final int WINDOW_WIDTH = 640;
+    private static final int WINDOW_HEIGHT = 480;
+    private static final int AVATAR_RADIUS = 18;
     private static final String USER_BUBBLE_STYLE = "-fx-background-color: #DCF8C6;"
             + " -fx-background-radius: 14; -fx-padding: 10;";
     private static final String MARCUS_BUBBLE_STYLE = "-fx-background-color: #F1F1F1;"
@@ -44,8 +52,8 @@ public class Main extends Application {
         marcus = new Marcus(DEFAULT_FILE_PATH);
         marcus.startSession();
 
-        conversation = new VBox(8);
-        conversation.setPadding(new Insets(12));
+        conversation = new VBox(CONVERSATION_GAP);
+        conversation.setPadding(new Insets(MESSAGE_PADDING));
         conversation.setFillWidth(true);
 
         conversationScroll = new ScrollPane(conversation);
@@ -68,15 +76,15 @@ public class Main extends Application {
 
         HBox commandBar = new HBox(10, prompt, commandInput, sendButton);
         commandBar.setAlignment(Pos.CENTER_LEFT);
-        HBox.setHgrow(commandInput, javafx.scene.layout.Priority.ALWAYS);
+        HBox.setHgrow(commandInput, Priority.ALWAYS);
 
         Label title = new Label("Marcus");
         title.setStyle("-fx-font-size: 22px; -fx-font-weight: bold;");
-        VBox content = new VBox(10, title, conversationScroll, commandBar);
-        content.setPadding(new Insets(16));
+        VBox content = new VBox(COMMAND_BAR_GAP, title, conversationScroll, commandBar);
+        content.setPadding(new Insets(CONTENT_PADDING));
 
         BorderPane root = new BorderPane(content);
-        Scene scene = new Scene(root, 640, 480);
+        Scene scene = new Scene(root, WINDOW_WIDTH, WINDOW_HEIGHT);
         stage.setScene(scene);
         stage.setTitle("Marcus Chatbot");
         stage.show();
@@ -107,7 +115,7 @@ public class Main extends Application {
             boolean showMarcusAvatar, boolean showUserAvatar) {
         Label bubble = new Label(message);
         bubble.setWrapText(true);
-        bubble.setMaxWidth(440);
+        bubble.setMaxWidth(MESSAGE_MAX_WIDTH);
         bubble.setStyle(bubbleStyle);
 
         HBox messageRow = showMarcusAvatar
@@ -122,14 +130,14 @@ public class Main extends Application {
     }
 
     private StackPane createMarcusAvatar() {
-        Circle avatarBackground = new Circle(18, Color.web("#5B6EE1"));
+        Circle avatarBackground = new Circle(AVATAR_RADIUS, Color.web("#5B6EE1"));
         Label robotIcon = new Label("🤖");
         robotIcon.setStyle("-fx-font-size: 16px;");
         return new StackPane(avatarBackground, robotIcon);
     }
 
     private StackPane createUserAvatar() {
-        Circle avatarBackground = new Circle(18, Color.web("#8B5CF6"));
+        Circle avatarBackground = new Circle(AVATAR_RADIUS, Color.web("#8B5CF6"));
         Label userIcon = new Label("🙂");
         userIcon.setStyle("-fx-font-size: 16px;");
         return new StackPane(avatarBackground, userIcon);
