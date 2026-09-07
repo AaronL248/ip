@@ -25,12 +25,16 @@ public class TaskList {
     /**
      * Creates a task list from an array whose populated entries appear first.
      *
-     * @param tasks tasks to store.
+    * @param tasks tasks to store.
      */
     public TaskList(Task[] tasks) {
+        assert tasks != null : "Task storage must not be null";
         this.tasks = tasks;
         while (size < tasks.length && tasks[size] != null) {
             size++;
+        }
+        for (int index = size; index < tasks.length; index++) {
+            assert tasks[index] == null : "Task storage must be packed from the beginning";
         }
     }
 
@@ -55,9 +59,11 @@ public class TaskList {
     /**
      * Adds a task to the end of the list.
      *
-     * @param task task to add.
+    * @param task task to add.
      */
     public void add(Task task) {
+        assert !isFull() : "Cannot add a task to a full task list";
+        assert task != null : "A task list must not store a null task";
         tasks[size] = task;
         size++;
     }
