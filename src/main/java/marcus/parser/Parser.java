@@ -1,6 +1,8 @@
 package marcus.parser;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 
 import marcus.task.Deadline;
@@ -12,6 +14,8 @@ import marcus.task.Todo;
  * Interprets user commands and creates tasks from valid task-creation commands.
  */
 public class Parser {
+    private static final DateTimeFormatter EVENT_DATE_TIME_FORMAT =
+            DateTimeFormatter.ofPattern("uuuu-MM-dd HH:mm");
     /** Identifies the commands understood by Marcus. */
     public enum CommandType {
         /** Exits Marcus. */
@@ -62,11 +66,16 @@ public class Parser {
      * @return the corresponding command type, or {@code UNKNOWN}.
      */
     public CommandType getCommandType(String command) {
+        if (command == null) {
+            return CommandType.UNKNOWN;
+        }
+        String normalizedCommand = command.trim();
         for (CommandType commandType : CommandType.values()) {
             if (commandType == CommandType.UNKNOWN) {
                 continue;
             }
-            if (command.equals(commandType.keyword) || command.startsWith(commandType.keyword + " ")) {
+            if (normalizedCommand.equals(commandType.keyword)
+                    || normalizedCommand.matches(commandType.keyword + "\\s+.*")) {
                 return commandType;
             }
         }
@@ -83,8 +92,12 @@ public class Parser {
     public String getArguments(String command, CommandType commandType) {
         assert commandType != null && commandType != CommandType.UNKNOWN
                 : "Arguments require a recognized command type";
-        return command.length() == commandType.keyword.length()
-                ? "" : command.substring(commandType.keyword.length() + 1);
+        if (command == null) {
+            return "";
+        }
+        String normalizedCommand = command.trim();
+        return normalizedCommand.length() == commandType.keyword.length()
+                ? "" : normalizedCommand.substring(commandType.keyword.length()).trim();
     }
 
     /**
@@ -96,7 +109,7 @@ public class Parser {
      */
     public Task createTask(String command, CommandType commandType) {
         assert commandType != null : "A command must have a command type";
-        if (commandType == CommandType.UNKNOWN) {
+        if (command == null || commandType == CommandType.UNKNOWN) {
             return null;
         }
         String arguments = getArguments(command, commandType);
@@ -125,7 +138,10 @@ public class Parser {
      * @return the new deadline, or {@code null} when the arguments are invalid.
      */
     private Task createDeadline(String arguments) {
-        String[] parts = arguments.split(" /by ", 2);
+        if (countOccurrences(arguments, "/by") != 1) {
+            return null;
+        }
+        String[] parts = arguments.split("\\s+/by\\s+", 2);
         if (parts.length != 2 || !isValidTaskPart(parts[0]) || !isValidTaskPart(parts[1])) {
             return null;
         }
@@ -143,16 +159,42 @@ public class Parser {
      * @return the new event, or {@code null} when the arguments are invalid.
      */
     private Task createEvent(String arguments) {
-        String[] descriptionAndFrom = arguments.split(" /from ", 2);
+        if (countOccurrences(arguments, "/from") != 1 || countOccurrences(arguments, "/to") != 1) {
+            return null;
+        }
+        String[] descriptionAndFrom = arguments.split("\\s+/from\\s+", 2);
         if (descriptionAndFrom.length != 2) {
             return null;
         }
-        String[] fromAndTo = descriptionAndFrom[1].split(" /to ", 2);
+        String[] fromAndTo = descriptionAndFrom[1].split("\\s+/to\\s+", 2);
         if (fromAndTo.length != 2 || !isValidTaskPart(descriptionAndFrom[0])
                 || !isValidTaskPart(fromAndTo[0]) || !isValidTaskPart(fromAndTo[1])) {
             return null;
         }
+        if (isInvalidEventOrder(fromAndTo[0], fromAndTo[1])) {
+            return null;
+        }
         return new Event(descriptionAndFrom[0], fromAndTo[0], fromAndTo[1]);
+    }
+
+    private static boolean isInvalidEventOrder(String from, String to) {
+        try {
+            LocalDateTime start = LocalDateTime.parse(from, EVENT_DATE_TIME_FORMAT);
+            LocalDateTime end = LocalDateTime.parse(to, EVENT_DATE_TIME_FORMAT);
+            return !start.isBefore(end);
+        } catch (DateTimeParseException e) {
+            return false;
+        }
+    }
+
+    private static int countOccurrences(String text, String target) {
+        int count = 0;
+        int position = 0;
+        while ((position = text.indexOf(target, position)) >= 0) {
+            count++;
+            position += target.length();
+        }
+        return count;
     }
 
     /**
@@ -163,7 +205,7 @@ public class Parser {
      * @return a command-specific error message.
      */
     public String getErrorMessage(String command, CommandType commandType) {
-        if (command.isBlank()) {
+        if (command == null || command.isBlank()) {
             return "Please enter a command.";
         }
         if ((commandType == CommandType.TODO || commandType == CommandType.DEADLINE
@@ -189,7 +231,7 @@ public class Parser {
      * @return whether the field is non-blank and does not contain the file delimiter.
      */
     public static boolean isValidTaskPart(String value) {
-        return !value.isBlank() && !value.contains("|");
+        return value != null && !value.isBlank() && !value.contains("|");
     }
 
     /**
@@ -199,6 +241,6 @@ public class Parser {
      * @return whether the tag starts with {@code #} and contains only permitted characters.
      */
     public static boolean isValidTag(String tag) {
-        return tag.matches("#[A-Za-z0-9_-]+");
+        return tag != null && tag.matches("#[A-Za-z0-9_-]+");
     }
 }

@@ -5,6 +5,8 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import java.util.List;
 
@@ -20,6 +22,8 @@ import marcus.ui.Ui;
  * Saves tasks to and loads tasks from Marcus's data file.
  */
 public class Storage {
+    private static final DateTimeFormatter EVENT_DATE_TIME_FORMAT =
+            DateTimeFormatter.ofPattern("uuuu-MM-dd HH:mm");
     private final Path saveFile;
 
     /**
@@ -46,7 +50,7 @@ public class Storage {
             }
             Files.writeString(saveFile, tasks.toFileString(), StandardCharsets.UTF_8);
             return true;
-        } catch (IOException e) {
+        } catch (IOException | SecurityException e) {
             ui.showStartupMessage("Unable to save tasks: " + e.getMessage());
             return false;
         }
@@ -60,11 +64,16 @@ public class Storage {
      */
     public Task[] load(Ui ui) {
         Task[] tasks = new Task[TaskList.CAPACITY];
-        if (!Files.exists(saveFile)) {
-            return tasks;
-        }
-        if (!Files.isRegularFile(saveFile)) {
-            ui.showStartupMessage("Unable to load tasks: " + saveFile + " is not a file.");
+        try {
+            if (!Files.exists(saveFile)) {
+                return tasks;
+            }
+            if (!Files.isRegularFile(saveFile)) {
+                ui.showStartupMessage("Unable to load tasks: " + saveFile + " is not a file.");
+                return tasks;
+            }
+        } catch (SecurityException e) {
+            ui.showStartupMessage("Unable to access tasks: " + e.getMessage());
             return tasks;
         }
 
@@ -84,10 +93,14 @@ public class Storage {
                     ui.showStartupMessage("Skipped invalid saved task: " + savedLine);
                     continue;
                 }
+                if (isDuplicate(tasks, taskCount, task)) {
+                    ui.showStartupMessage("Skipped duplicate saved task: " + savedLine);
+                    continue;
+                }
                 tasks[taskCount] = task;
                 taskCount++;
             }
-        } catch (IOException e) {
+        } catch (IOException | SecurityException e) {
             ui.showStartupMessage("Unable to load tasks: " + e.getMessage());
         }
         return tasks;
@@ -121,7 +134,7 @@ public class Storage {
             tagIndex = parts.length == 5 ? 4 : -1;
         } else if (parts[0].equals("E") && (parts.length == 5 || parts.length == 6)
                 && Parser.isValidTaskPart(parts[2]) && Parser.isValidTaskPart(parts[3])
-                && Parser.isValidTaskPart(parts[4])) {
+                && Parser.isValidTaskPart(parts[4]) && isValidEventRange(parts[3], parts[4])) {
             task = new Event(parts[2], parts[3], parts[4]);
             tagIndex = parts.length == 6 ? 5 : -1;
         } else {
@@ -134,6 +147,25 @@ public class Storage {
             task.markAsDone();
         }
         return task;
+    }
+
+    private boolean isDuplicate(Task[] tasks, int taskCount, Task candidate) {
+        for (int index = 0; index < taskCount; index++) {
+            if (tasks[index].toFileString().equals(candidate.toFileString())) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private boolean isValidEventRange(String from, String to) {
+        try {
+            LocalDateTime start = LocalDateTime.parse(from, EVENT_DATE_TIME_FORMAT);
+            LocalDateTime end = LocalDateTime.parse(to, EVENT_DATE_TIME_FORMAT);
+            return start.isBefore(end);
+        } catch (DateTimeParseException e) {
+            return true;
+        }
     }
 
     /**

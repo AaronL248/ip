@@ -57,6 +57,11 @@ public class Marcus {
      * @return whether the session should continue accepting commands.
      */
     public boolean processCommand(String command, ResponseHandler responseHandler) {
+        if (command == null || command.isBlank()) {
+            responseHandler.showError("Please enter a command.");
+            return true;
+        }
+        command = command.trim();
         Parser.CommandType commandType = parser.getCommandType(command);
         if (commandType == Parser.CommandType.BYE) {
             responseHandler.showGoodbye();
@@ -238,6 +243,8 @@ public class Marcus {
             responseHandler.showError(parser.getErrorMessage(command, commandType));
         } else if (tasks.isFull()) {
             responseHandler.showError("Your task list is full.");
+        } else if (tasks.containsEquivalentTask(newTask)) {
+            responseHandler.showError("You already have an identical task in your list.");
         } else {
             tasks.add(newTask);
             storage.save(tasks, ui);

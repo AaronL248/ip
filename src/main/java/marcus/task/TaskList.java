@@ -72,6 +72,18 @@ public class TaskList {
     }
 
     /**
+     * Reports whether a task with the same type and details is already present.
+     *
+     * @param candidate task to compare with existing tasks.
+     * @return whether an equivalent task is already stored.
+     */
+    public boolean containsEquivalentTask(Task candidate) {
+        assert candidate != null : "The candidate task must not be null";
+        return IntStream.range(0, size)
+                .anyMatch(index -> tasks[index].toFileString().equals(candidate.toFileString()));
+    }
+
+    /**
      * Returns the task at a one-based user-facing task number.
      *
      * @param taskNumber one-based task number.
