@@ -51,7 +51,7 @@ class MarcusTest {
         RecordingResponseHandler responseHandler = new RecordingResponseHandler();
 
         assertFalse(marcus.processCommand("bye", responseHandler));
-        assertTrue(responseHandler.goodbye);
+        assertTrue(responseHandler.isGoodbyeShown);
     }
 
     private Marcus createMarcus() {
@@ -63,7 +63,7 @@ class MarcusTest {
     private static class RecordingResponseHandler implements ResponseHandler {
         private String message = "";
         private String error = "";
-        private boolean goodbye;
+        private boolean isGoodbyeShown;
 
         @Override
         public void showMessage(String message) {
@@ -82,7 +82,7 @@ class MarcusTest {
 
         @Override
         public void showGoodbye() {
-            goodbye = true;
+            isGoodbyeShown = true;
         }
     }
 }

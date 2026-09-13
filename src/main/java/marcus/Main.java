@@ -1,5 +1,9 @@
 package marcus;
 
+import java.net.URL;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.geometry.Insets;
@@ -9,13 +13,18 @@ import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.control.TextField;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
+import javafx.scene.layout.Region;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
+import javafx.scene.text.Text;
+import javafx.scene.text.TextFlow;
 import javafx.stage.Stage;
 
 /**
@@ -49,6 +58,10 @@ public class Main extends Application {
     private static final String SEND_BUTTON_STYLE = "-fx-background-color: #0F766E;"
             + " -fx-text-fill: white; -fx-background-radius: 9; -fx-padding: 9 18;"
             + " -fx-font-weight: bold;";
+    private static final String TASK_TEXT_STYLE = "-fx-text-fill: #134E4A; -fx-font-size: 13px;";
+    private static final String TAG_TEXT_STYLE = "-fx-fill: #7C3AED; -fx-font-style: italic;"
+            + " -fx-font-weight: bold;";
+    private static final Pattern TAG_PATTERN = Pattern.compile("#[A-Za-z0-9_-]+");
     private VBox conversation;
     private ScrollPane conversationScroll;
     private TextField commandInput;
@@ -150,12 +163,7 @@ public class Main extends Application {
         Label bubble = new Label(message);
         bubble.setWrapText(true);
         bubble.setMinWidth(0);
-        bubble.setMaxWidth(MESSAGE_MAX_WIDTH);
-        conversation.widthProperty().addListener((observable, oldWidth, newWidth) -> {
-            double availableWidth = Math.max(200, newWidth.doubleValue() - 20);
-            double preferredWidth = availableWidth * (isUserMessage ? 0.82 : 0.92);
-            bubble.setMaxWidth(Math.min(MESSAGE_MAX_WIDTH, preferredWidth));
-        });
+        bindResponsiveWidth(bubble, isUserMessage);
         bubble.setStyle(bubbleStyle);
 
         HBox messageRow = isUserMessage
@@ -164,10 +172,84 @@ public class Main extends Application {
         messageRow.setMaxWidth(Double.MAX_VALUE);
         messageRow.setAlignment(alignment);
         conversation.getChildren().add(messageRow);
+        Platform.runLater(() -> conversationScroll.setVvalue(1.0));
+    }
+
+    private void appendTaskListMessage(String taskList) {
+        VBox bubble = new VBox(6);
+        bubble.setMinWidth(0);
+        bindResponsiveWidth(bubble, false);
+        bubble.setStyle(MARCUS_BUBBLE_STYLE);
+
+        for (String line : taskList.split("\\n", -1)) {
+            if (line.isBlank()) {
+                continue;
+            }
+            bubble.getChildren().add(createTaskListLine(line));
+        }
+
+        HBox messageRow = new HBox(8, createMarcusAvatar(), bubble);
+        messageRow.setMaxWidth(Double.MAX_VALUE);
+        messageRow.setAlignment(Pos.BOTTOM_LEFT);
+        conversation.getChildren().add(messageRow);
+        Platform.runLater(() -> conversationScroll.setVvalue(1.0));
+    }
+
+    private Region createTaskListLine(String line) {
+        String trimmedLine = line.trim();
+        if (!trimmedLine.matches("\\d+\\.\\[[TDE]\\]\\[[ X]\\].*")) {
+            Label text = new Label(trimmedLine);
+            text.setWrapText(true);
+            text.setStyle(TASK_TEXT_STYLE);
+            return text;
+        }
+
+        String taskNumber = trimmedLine.substring(0, trimmedLine.indexOf('.')) + ".";
+        String taskStatus = trimmedLine.substring(trimmedLine.indexOf('.') + 1, 9);
+        String taskDescription = trimmedLine.substring(9).trim();
+        Label number = new Label(taskNumber);
+        number.setMinWidth(28);
+        number.setStyle(TASK_TEXT_STYLE);
+        Label status = new Label(taskStatus);
+        status.setMinWidth(42);
+        status.setStyle(TASK_TEXT_STYLE);
+        TextFlow description = createStyledTaskDescription(taskDescription);
+        description.setMinWidth(0);
+        description.setMaxWidth(Double.MAX_VALUE);
+        HBox.setHgrow(description, Priority.ALWAYS);
+        return new HBox(4, number, status, description);
+    }
+
+    private TextFlow createStyledTaskDescription(String description) {
+        TextFlow textFlow = new TextFlow();
+        Matcher matcher = TAG_PATTERN.matcher(description);
+        int textStart = 0;
+        while (matcher.find()) {
+            addTaskText(textFlow, description.substring(textStart, matcher.start()), TASK_TEXT_STYLE);
+            addTaskText(textFlow, matcher.group(), TAG_TEXT_STYLE);
+            textStart = matcher.end();
+        }
+        addTaskText(textFlow, description.substring(textStart), TASK_TEXT_STYLE);
+        return textFlow;
+    }
+
+    private void addTaskText(TextFlow textFlow, String content, String style) {
+        if (!content.isEmpty()) {
+            Text text = new Text(content);
+            text.setStyle(style);
+            textFlow.getChildren().add(text);
+        }
+    }
+
+    private void bindResponsiveWidth(Region bubble, boolean isUserMessage) {
+        conversation.widthProperty().addListener((observable, oldWidth, newWidth) -> {
+            double availableWidth = Math.max(200, newWidth.doubleValue() - 20);
+            double preferredWidth = availableWidth * (isUserMessage ? 0.82 : 0.92);
+            bubble.setMaxWidth(Math.min(MESSAGE_MAX_WIDTH, preferredWidth));
+        });
         double availableWidth = Math.max(200, conversation.getWidth() - 20);
         double preferredWidth = availableWidth * (isUserMessage ? 0.82 : 0.92);
         bubble.setMaxWidth(Math.min(MESSAGE_MAX_WIDTH, preferredWidth));
-        Platform.runLater(() -> conversationScroll.setVvalue(1.0));
     }
 
     private StackPane createMarcusAvatar() {
@@ -178,6 +260,16 @@ public class Main extends Application {
     }
 
     private StackPane createUserAvatar() {
+        URL imageResource = getClass().getResource("/user-avatar.png");
+        if (imageResource != null) {
+            ImageView userImage = new ImageView(new Image(imageResource.toExternalForm()));
+            userImage.setFitWidth(AVATAR_RADIUS * 2);
+            userImage.setFitHeight(AVATAR_RADIUS * 2);
+            userImage.setPreserveRatio(false);
+            userImage.setClip(new Circle(AVATAR_RADIUS, AVATAR_RADIUS, AVATAR_RADIUS));
+            return new StackPane(userImage);
+        }
+
         Circle avatarBackground = new Circle(AVATAR_RADIUS, Color.web("#8B5CF6"));
         Label userIcon = new Label("🙂");
         userIcon.setStyle("-fx-font-size: 14px;");
@@ -197,7 +289,7 @@ public class Main extends Application {
 
         @Override
         public void showTaskList(String taskList) {
-            appendMarcusMessage(taskList);
+            appendTaskListMessage(taskList);
         }
 
         @Override

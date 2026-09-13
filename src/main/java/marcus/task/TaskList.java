@@ -183,11 +183,11 @@ public class TaskList {
      * @return formatted task-list text.
      */
     private String formatNumberedTasks(String heading, Predicate<Task> condition, String emptyMessage,
-            boolean showTags) {
+            boolean shouldShowTags) {
         String matchingTasks = IntStream.range(0, size)
                 .filter(index -> condition.test(tasks[index]))
                 .mapToObj(index -> INDENT + (index + 1) + "."
-                        + (showTags ? tasks[index] : tasks[index].toStringWithoutTags()))
+                        + (shouldShowTags ? tasks[index] : tasks[index].toStringWithoutTags()))
                 .collect(Collectors.joining("\n"));
         String taskContent = matchingTasks.isEmpty() ? INDENT + emptyMessage : matchingTasks;
         return INDENT + heading + "\n" + taskContent + "\n";
