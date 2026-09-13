@@ -12,6 +12,13 @@ public interface ResponseHandler {
     void showMessage(String message);
 
     /**
+     * Displays an error response.
+     *
+     * @param message error text.
+     */
+    void showError(String message);
+
+    /**
      * Displays a formatted task list.
      *
      * @param taskList formatted task-list text.

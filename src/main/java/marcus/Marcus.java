@@ -89,7 +89,7 @@ public class Marcus {
                 String normalizedTag = searchTerm.toLowerCase(Locale.ROOT);
                 responseHandler.showTaskList(tasks.tasksMatchingTagToString(normalizedTag));
             } else {
-                responseHandler.showMessage("Tag invalid, please try another tag");
+                responseHandler.showError("Tag invalid, please try another tag");
             }
             return;
         }
@@ -98,7 +98,7 @@ public class Marcus {
             responseHandler.showTaskList(tasks.tasksOnDateToString(date));
         } catch (DateTimeParseException e) {
             if (searchTerm.isBlank() || searchTerm.matches("\\d{4}-\\d{2}-\\d{2}")) {
-                responseHandler.showMessage("Please provide a keyword or a date in yyyy-mm-dd format, "
+                responseHandler.showError("Please provide a keyword or a date in yyyy-mm-dd format, "
                         + "eg. find book or find 2019-10-15");
             } else {
                 responseHandler.showTaskList(tasks.tasksMatchingKeywordToString(searchTerm));
@@ -114,27 +114,27 @@ public class Marcus {
         } else if (Parser.isValidTag(tag)) {
             responseHandler.showTaskList(tasks.tasksMatchingTagToString(tag.toLowerCase(Locale.ROOT)));
         } else {
-            responseHandler.showMessage("Tag invalid, please try another tag");
+            responseHandler.showError("Tag invalid, please try another tag");
         }
     }
 
     private void processTag(String command, Parser.CommandType commandType, ResponseHandler responseHandler) {
         String[] parts = parser.getArguments(command, commandType).split("\\s+");
         if (parts.length < 2) {
-            responseHandler.showMessage("Tag invalid, please try another tag");
+            responseHandler.showError("Tag invalid, please try another tag");
             return;
         }
         try {
             int taskNumber = Integer.parseInt(parts[0]);
             Task task = tasks.get(taskNumber);
             if (task == null) {
-                responseHandler.showMessage("That task number does not exist.");
+                responseHandler.showError("That task number does not exist.");
                 return;
             }
             for (int index = 1; index < parts.length; index++) {
                 parts[index] = parts[index].toLowerCase(Locale.ROOT);
                 if (!Parser.isValidTag(parts[index])) {
-                    responseHandler.showMessage("Tag invalid, please try another tag");
+                    responseHandler.showError("Tag invalid, please try another tag");
                     return;
                 }
             }
@@ -152,7 +152,7 @@ public class Marcus {
             String tagLabel = addedTags.toString().contains(" ") ? "Added tags " : "Added tag ";
             responseHandler.showMessage(tagLabel + addedTags + " to:\n  " + task);
         } catch (NumberFormatException e) {
-            responseHandler.showMessage("Please provide a task number to tag.");
+            responseHandler.showError("Please provide a task number to tag.");
         }
     }
 
@@ -160,14 +160,14 @@ public class Marcus {
             ResponseHandler responseHandler) {
         String[] parts = parser.getArguments(command, commandType).split("\\s+");
         if (parts.length != 2 || (!parts[1].equals("all") && !Parser.isValidTag(parts[1]))) {
-            responseHandler.showMessage("Tag invalid, please try another tag");
+            responseHandler.showError("Tag invalid, please try another tag");
             return;
         }
         try {
             int taskNumber = Integer.parseInt(parts[0]);
             Task task = tasks.get(taskNumber);
             if (task == null) {
-                responseHandler.showMessage("That task number does not exist.");
+                responseHandler.showError("That task number does not exist.");
                 return;
             }
             if (parts[1].equals("all")) {
@@ -180,7 +180,7 @@ public class Marcus {
             }
             storage.save(tasks, ui);
         } catch (NumberFormatException e) {
-            responseHandler.showMessage("Please provide a task number to untag.");
+            responseHandler.showError("Please provide a task number to untag.");
         }
     }
 
@@ -189,14 +189,14 @@ public class Marcus {
             int taskNumber = Integer.parseInt(parser.getArguments(command, commandType));
             Task task = tasks.get(taskNumber);
             if (task == null) {
-                responseHandler.showMessage("That task number does not exist.");
+                responseHandler.showError("That task number does not exist.");
             } else {
                 task.markAsDone();
                 storage.save(tasks, ui);
                 responseHandler.showMessage("Nice! I've marked this task as done:\n  " + task);
             }
         } catch (NumberFormatException e) {
-            responseHandler.showMessage("Please provide a task number to mark.");
+            responseHandler.showError("Please provide a task number to mark.");
         }
     }
 
@@ -205,14 +205,14 @@ public class Marcus {
             int taskNumber = Integer.parseInt(parser.getArguments(command, commandType));
             Task task = tasks.get(taskNumber);
             if (task == null) {
-                responseHandler.showMessage("That task number does not exist.");
+                responseHandler.showError("That task number does not exist.");
             } else {
                 task.unmarkAsDone();
                 storage.save(tasks, ui);
                 responseHandler.showMessage("OK, I've marked this task as not done yet:\n  " + task);
             }
         } catch (NumberFormatException e) {
-            responseHandler.showMessage("Please provide a task number to unmark.");
+            responseHandler.showError("Please provide a task number to unmark.");
         }
     }
 
@@ -221,23 +221,23 @@ public class Marcus {
             int taskNumber = Integer.parseInt(parser.getArguments(command, commandType));
             Task removedTask = tasks.remove(taskNumber);
             if (removedTask == null) {
-                responseHandler.showMessage("That task number does not exist.");
+                responseHandler.showError("That task number does not exist.");
             } else {
                 storage.save(tasks, ui);
                 responseHandler.showMessage("Noted. I've removed this task:\n  " + removedTask
                         + "\nNow you have " + tasks.size() + " tasks in the list.");
             }
         } catch (NumberFormatException e) {
-            responseHandler.showMessage("Please provide a task number to delete.");
+            responseHandler.showError("Please provide a task number to delete.");
         }
     }
 
     private void processCreate(String command, Parser.CommandType commandType, ResponseHandler responseHandler) {
         Task newTask = parser.createTask(command, commandType);
         if (newTask == null) {
-            responseHandler.showMessage(parser.getErrorMessage(command, commandType));
+            responseHandler.showError(parser.getErrorMessage(command, commandType));
         } else if (tasks.isFull()) {
-            responseHandler.showMessage("Your task list is full.");
+            responseHandler.showError("Your task list is full.");
         } else {
             tasks.add(newTask);
             storage.save(tasks, ui);

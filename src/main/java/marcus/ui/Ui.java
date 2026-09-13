@@ -66,6 +66,12 @@ public class Ui implements ResponseHandler {
         System.out.println(DIVIDER);
     }
 
+    /** Displays an error using the ordinary console response format. */
+    @Override
+    public void showError(String message) {
+        showMessage(message);
+    }
+
     /**
      * Displays an already formatted task list inside Marcus's divider border.
      *
