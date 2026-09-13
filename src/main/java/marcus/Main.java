@@ -28,7 +28,7 @@ import javafx.scene.text.TextFlow;
 import javafx.stage.Stage;
 
 /**
- * Displays a JavaFX window containing a greeting.
+ * Displays Marcus's JavaFX task-management interface.
  */
 public class Main extends Application {
     private static final String DEFAULT_FILE_PATH = "data/results.txt";
