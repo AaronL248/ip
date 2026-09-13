@@ -26,7 +26,7 @@ public class Ui implements ResponseHandler {
                 + "| |  | |/ ___ \\|  _ <| |___| |_| |___) |\n"
                 + "|_|  |_/_/   \\_\\_| \\_\\\\____|\\___/|____/\n";
         System.out.println(banner);
-        System.out.println("Hello, I am Marcus the Chatbot!\nWhat can I do for you?");
+        System.out.println("Hey! I'm Marcus, your calm task companion.\nWhat shall we tackle?");
         System.out.println(DIVIDER);
     }
 
@@ -50,7 +50,7 @@ public class Ui implements ResponseHandler {
 
     /** Displays the goodbye message. */
     public void showGoodbye() {
-        showMessage("Bye. Hope to see you again soon!");
+        showMessage("See you later! Your tasks will be here when you're ready.");
     }
 
     /**

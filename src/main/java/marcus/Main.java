@@ -31,22 +31,22 @@ public class Main extends Application {
     private static final int WINDOW_WIDTH = 640;
     private static final int WINDOW_HEIGHT = 480;
     private static final int AVATAR_RADIUS = 16;
-    private static final String USER_BUBBLE_STYLE = "-fx-background-color: #DCF8C6;"
+    private static final String USER_BUBBLE_STYLE = "-fx-background-color: #E0E7FF;"
             + " -fx-background-radius: 16 5 16 16; -fx-padding: 10 14;"
-            + " -fx-text-fill: #17301D; -fx-font-size: 13px;";
-    private static final String MARCUS_BUBBLE_STYLE = "-fx-background-color: #F1F1F1;"
+            + " -fx-text-fill: #312E81; -fx-font-size: 13px;";
+    private static final String MARCUS_BUBBLE_STYLE = "-fx-background-color: #ECFDF5;"
             + " -fx-background-radius: 5 16 16 16; -fx-padding: 11 14;"
-            + " -fx-text-fill: #1F2937; -fx-font-size: 13px;";
+            + " -fx-text-fill: #134E4A; -fx-font-size: 13px;";
     private static final String ERROR_BUBBLE_STYLE = "-fx-background-color: #FEE2E2;"
             + " -fx-background-radius: 5 16 16 16; -fx-padding: 11 14;"
             + " -fx-text-fill: #991B1B; -fx-font-size: 13px;";
-    private static final String ROOT_STYLE = "-fx-background-color: #F6F8FC;";
-    private static final String HEADER_STYLE = "-fx-background-color: #FFFFFF;"
-            + " -fx-border-color: #E5E7EB; -fx-border-width: 0 0 1 0;";
+    private static final String ROOT_STYLE = "-fx-background-color: #F8FAFC;";
+    private static final String HEADER_STYLE = "-fx-background-color: #EEF2FF;"
+            + " -fx-border-color: #DDE4FF; -fx-border-width: 0 0 1 0;";
     private static final String INPUT_STYLE = "-fx-background-color: #FFFFFF;"
             + " -fx-border-color: #D1D5DB; -fx-border-radius: 9; -fx-background-radius: 9;"
             + " -fx-padding: 9 12; -fx-font-size: 13px;";
-    private static final String SEND_BUTTON_STYLE = "-fx-background-color: #4F46E5;"
+    private static final String SEND_BUTTON_STYLE = "-fx-background-color: #0F766E;"
             + " -fx-text-fill: white; -fx-background-radius: 9; -fx-padding: 9 18;"
             + " -fx-font-weight: bold;";
     private VBox conversation;
@@ -77,16 +77,16 @@ public class Main extends Application {
         conversationScroll.setStyle("-fx-background: transparent; -fx-background-color: transparent;");
         VBox.setVgrow(conversationScroll, Priority.ALWAYS);
 
-        appendMarcusMessage("Hello, I am Marcus the Chatbot!\nWhat can I do for you?");
+        appendMarcusMessage("Hey! I'm Marcus, your calm task companion.\nWhat shall we tackle?");
 
-        Label prompt = new Label("Ask Marcus");
+        Label prompt = new Label("✦  Ask Marcus");
         prompt.setStyle("-fx-text-fill: #6B7280; -fx-font-size: 12px; -fx-font-weight: bold;");
         commandInput = new TextField();
         commandInput.setPromptText("e.g. list, todo read a book, or bye");
         commandInput.setStyle(INPUT_STYLE);
         commandInput.setOnAction(event -> submitCommand());
 
-        Button sendButton = new Button("Send");
+        Button sendButton = new Button("Send  ➤");
         sendButton.setDefaultButton(true);
         sendButton.setStyle(SEND_BUTTON_STYLE);
         sendButton.setOnAction(event -> submitCommand());
@@ -98,7 +98,7 @@ public class Main extends Application {
 
         Label title = new Label("Marcus");
         title.setStyle("-fx-font-size: 21px; -fx-font-weight: bold; -fx-text-fill: #111827;");
-        Label subtitle = new Label("Your personal task manager");
+        Label subtitle = new Label("Your calm task companion  •  ready when you are");
         subtitle.setStyle("-fx-font-size: 11px; -fx-text-fill: #6B7280;");
         VBox headerText = new VBox(2, title, subtitle);
         HBox header = new HBox(10, createMarcusAvatar(), headerText);
@@ -202,7 +202,7 @@ public class Main extends Application {
 
         @Override
         public void showGoodbye() {
-            appendMarcusMessage("Bye. Hope to see you again soon!");
+            appendMarcusMessage("See you later! Your tasks will be here when you're ready.");
         }
     }
 }
