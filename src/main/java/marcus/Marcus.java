@@ -146,11 +146,11 @@ public class Marcus {
             }
             storage.save(tasks, ui);
             if (addedTags.length() == 0) {
-                responseHandler.showMessage("No new tags were added to:\n  " + task);
+                responseHandler.showMessage("You're already covered—no new tags were added to:\n  " + task);
                 return;
             }
             String tagLabel = addedTags.toString().contains(" ") ? "Added tags " : "Added tag ";
-            responseHandler.showMessage(tagLabel + addedTags + " to:\n  " + task);
+            responseHandler.showMessage("Nice choice! " + tagLabel + addedTags + " to:\n  " + task);
         } catch (NumberFormatException e) {
             responseHandler.showError("Please provide a task number to tag.");
         }
@@ -172,11 +172,11 @@ public class Marcus {
             }
             if (parts[1].equals("all")) {
                 task.removeAllTags();
-                responseHandler.showMessage("Removed all tags from:\n  " + task);
+                responseHandler.showMessage("Done—removed all tags from:\n  " + task);
             } else {
                 String normalizedTag = parts[1].toLowerCase(Locale.ROOT);
                 task.removeTag(normalizedTag);
-                responseHandler.showMessage("Removed tag " + normalizedTag + " from:\n  " + task);
+                responseHandler.showMessage("Done—removed tag " + normalizedTag + " from:\n  " + task);
             }
             storage.save(tasks, ui);
         } catch (NumberFormatException e) {
@@ -193,7 +193,7 @@ public class Marcus {
             } else {
                 task.markAsDone();
                 storage.save(tasks, ui);
-                responseHandler.showMessage("Nice! I've marked this task as done:\n  " + task);
+                responseHandler.showMessage("Great progress! I've marked this task as done:\n  " + task);
             }
         } catch (NumberFormatException e) {
             responseHandler.showError("Please provide a task number to mark.");
@@ -209,7 +209,7 @@ public class Marcus {
             } else {
                 task.unmarkAsDone();
                 storage.save(tasks, ui);
-                responseHandler.showMessage("OK, I've marked this task as not done yet:\n  " + task);
+                responseHandler.showMessage("No problem—I've marked this task as not done yet:\n  " + task);
             }
         } catch (NumberFormatException e) {
             responseHandler.showError("Please provide a task number to unmark.");
@@ -224,7 +224,7 @@ public class Marcus {
                 responseHandler.showError("That task number does not exist.");
             } else {
                 storage.save(tasks, ui);
-                responseHandler.showMessage("Noted. I've removed this task:\n  " + removedTask
+                responseHandler.showMessage("Done—I removed this task:\n  " + removedTask
                         + "\nNow you have " + tasks.size() + " tasks in the list.");
             }
         } catch (NumberFormatException e) {
@@ -241,7 +241,7 @@ public class Marcus {
         } else {
             tasks.add(newTask);
             storage.save(tasks, ui);
-            responseHandler.showMessage("Got it. I've added this task:\n  " + newTask
+            responseHandler.showMessage("On it! I've added this task:\n  " + newTask
                     + "\nNow you have " + tasks.size() + " tasks in the list.");
         }
     }
